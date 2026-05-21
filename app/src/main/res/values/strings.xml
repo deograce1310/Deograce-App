@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Deograce Abonnements</string>
+    <string name="notification_channel_name">Expiration Abonnements</string>
+    <string name="notification_channel_desc">Rappels d\'expiration d\'abonnements clients</string>
+</resources>
