@@ -23,6 +23,8 @@ service cloud.firestore {
         && request.resource.data.durationDays is int
         && request.resource.data.price is number
         && request.resource.data.isActive is bool
+        // id must match the document path — prevents mismatched IDs via direct API
+        && request.resource.data.id == clientId
         // Size limits — prevents storage bomb DoS
         && request.resource.data.id.size() <= 36
         && request.resource.data.name.size() <= 200
@@ -32,10 +34,14 @@ service cloud.firestore {
         && request.resource.data.expirationDate.size() <= 10
         && request.resource.data.createdAt.size() <= 30
         && request.resource.data.notes.size() <= 2000
+        // Date format validation — prevents arbitrary strings
+        && request.resource.data.startDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.expirationDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
         // Value bounds
         && request.resource.data.durationDays >= 0
         && request.resource.data.durationDays <= 3650
-        && request.resource.data.price >= 0;
+        && request.resource.data.price >= 0
+        && request.resource.data.price <= 9999999;
     }
   }
 }
