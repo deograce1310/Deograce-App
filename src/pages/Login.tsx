@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signInWithRedirect,
   getRedirectResult,
 } from 'firebase/auth'
@@ -8,6 +9,7 @@ import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { auth, googleProvider } from '../firebase'
 
 export default function Login() {
+  const [tab, setTab] = useState<'login' | 'register'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPwd, setShowPwd] = useState(false)
@@ -19,6 +21,8 @@ export default function Login() {
   const friendlyError = (code: string) => {
     const map: Record<string, string> = {
       'auth/invalid-credential':     'Email ou mot de passe incorrect.',
+      'auth/email-already-in-use':   'Cet email est déjà utilisé.',
+      'auth/weak-password':          'Le mot de passe doit contenir au moins 6 caractères.',
       'auth/invalid-email':          'Adresse email invalide.',
       'auth/user-not-found':         'Email ou mot de passe incorrect.',
       'auth/wrong-password':         'Email ou mot de passe incorrect.',
@@ -38,7 +42,11 @@ export default function Login() {
     if (!email.trim() || !password) { setError('Remplissez tous les champs.'); return }
     setLoading(true); clearError()
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password)
+      if (tab === 'login') {
+        await signInWithEmailAndPassword(auth, email.trim(), password)
+      } else {
+        await createUserWithEmailAndPassword(auth, email.trim(), password)
+      }
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? ''
       setError(friendlyError(code))
@@ -59,13 +67,26 @@ export default function Login() {
 
   return (
     <div className="flex flex-col h-full bg-[#F5F2ED] safe-top">
-      <div className="flex flex-col items-center pt-16 pb-10 px-6">
+      <div className="flex flex-col items-center pt-14 pb-8 px-6">
         <img src="/logo.png" alt="Deograce" className="h-20 object-contain mb-6 mix-blend-multiply" />
-        <p className="text-2xl font-black text-slate-900 text-center">Connexion</p>
-        <p className="text-sm text-slate-400 text-center mt-1">Accédez à vos clients</p>
+        <p className="text-2xl font-black text-slate-900 text-center">Bienvenue</p>
+        <p className="text-sm text-slate-400 text-center mt-1">Gérez vos abonnements clients</p>
+      </div>
+
+      {/* Tab switcher */}
+      <div className="mx-6 mb-6 flex bg-[#EDE9E3] rounded-2xl p-1">
+        {(['login', 'register'] as const).map(t => (
+          <button key={t} onClick={() => { setTab(t); clearError() }}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+            }`}>
+            {t === 'login' ? 'Connexion' : 'Inscription'}
+          </button>
+        ))}
       </div>
 
       <div className="px-6 flex flex-col gap-4 flex-1">
+        {/* Google */}
         <button onClick={handleGoogle} disabled={loading}
           className="w-full flex items-center justify-center gap-3 bg-white border border-[#EDE9E3] rounded-2xl py-4 press shadow-sm disabled:opacity-60">
           {loading
@@ -79,6 +100,7 @@ export default function Login() {
           <div className="flex-1 h-px bg-[#EDE9E3]" />
         </div>
 
+        {/* Email + password */}
         <div className="bg-white border border-[#EDE9E3] rounded-2xl shadow-sm overflow-hidden">
           <div className="flex items-center px-4 py-3.5 gap-3">
             <Mail className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -99,7 +121,7 @@ export default function Login() {
               value={password}
               onChange={e => { setPassword(e.target.value); clearError() }}
               placeholder="Mot de passe"
-              autoComplete="current-password"
+              autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
               onKeyDown={e => e.key === 'Enter' && handleEmail()}
               className="flex-1 text-sm font-medium text-slate-900 bg-transparent outline-none placeholder-slate-300"
             />
@@ -117,8 +139,10 @@ export default function Login() {
         )}
 
         <button onClick={handleEmail} disabled={loading}
-          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center">
-          Se connecter
+          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          {loading
+            ? <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            : tab === 'login' ? 'Se connecter' : 'Créer un compte'}
         </button>
       </div>
 
