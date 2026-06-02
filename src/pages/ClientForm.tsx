@@ -86,10 +86,10 @@ export default function ClientForm() {
   )
 
   return (
-    <div className="flex flex-col h-full bg-slate-50">
+    <div className="flex flex-col h-full bg-[#F5F2ED]">
       {/* Header */}
-      <div className="bg-white safe-top px-4 pt-4 pb-4 border-b border-slate-100 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center press flex-shrink-0">
+      <div className="bg-[#FDFCFA] safe-top px-4 pt-4 pb-4 border-b border-[#EDE9E3] flex items-center gap-3">
+        <button onClick={() => navigate(-1)} className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center press flex-shrink-0">
           <ArrowLeft className="w-4 h-4 text-slate-700" />
         </button>
         <div className="flex-1">
@@ -134,7 +134,7 @@ export default function ClientForm() {
                 className={`py-2.5 rounded-xl text-xs font-bold transition-all press ${
                   parseInt(form.durationDays) === days
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                    : 'bg-slate-100 text-slate-600'
+                    : 'bg-[#EDE9E3] text-slate-600'
                 }`}>
                 {label}
               </button>
@@ -164,7 +164,7 @@ export default function ClientForm() {
       </div>
 
       {/* Save */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 px-4 py-4 safe-bottom">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] border-t border-[#EDE9E3] px-4 py-4 safe-bottom">
         <button onClick={handleSave}
           className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 active:bg-blue-700">
           {isEdit ? 'Enregistrer les modifications' : 'Ajouter le client'}
@@ -178,7 +178,7 @@ function FieldGroup({ label, children }: { label: string; children: React.ReactN
   return (
     <div>
       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1 mb-2">{label}</p>
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-[#FDFCFA] rounded-2xl border border-[#EDE9E3] shadow-sm overflow-hidden">
         {children}
       </div>
     </div>
@@ -186,7 +186,7 @@ function FieldGroup({ label, children }: { label: string; children: React.ReactN
 }
 
 function Divider() {
-  return <div className="h-px bg-slate-50 mx-4" />
+  return <div className="h-px bg-[#F5F2ED] mx-4" />
 }
 
 function Field({ label, type = 'text', value, onChange, placeholder, required }: {

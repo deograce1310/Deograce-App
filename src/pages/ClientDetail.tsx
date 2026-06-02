@@ -22,7 +22,7 @@ export default function ClientDetail() {
   useEffect(() => { if (id) setClient(getClient(id) || null) }, [id])
 
   if (!client) return (
-    <div className="flex items-center justify-center h-full bg-slate-50">
+    <div className="flex items-center justify-center h-full bg-[#F5F2ED]">
       <div className="w-7 h-7 border-[3px] border-blue-600 border-t-transparent rounded-full animate-spin" />
     </div>
   )
@@ -56,21 +56,21 @@ export default function ClientDetail() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50">
+    <div className="flex flex-col h-full bg-[#F5F2ED]">
       {/* Header */}
-      <div className="bg-white safe-top px-4 pt-4 pb-4 border-b border-slate-100 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center press flex-shrink-0">
+      <div className="bg-[#FDFCFA] safe-top px-4 pt-4 pb-4 border-b border-[#EDE9E3] flex items-center gap-3">
+        <button onClick={() => navigate(-1)} className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center press flex-shrink-0">
           <ArrowLeft className="w-4 h-4 text-slate-700" />
         </button>
         <p className="flex-1 text-base font-bold text-slate-900 truncate">{client.name}</p>
-        <button onClick={() => navigate(`/client/${id}/edit`)} className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center press flex-shrink-0">
+        <button onClick={() => navigate(`/client/${id}/edit`)} className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center press flex-shrink-0">
           <Edit3 className="w-4 h-4 text-slate-700" />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-28 animate-fade-in-up">
         {/* Hero card */}
-        <div className="bg-white mx-4 mt-4 rounded-2xl border border-slate-100 shadow-sm p-5">
+        <div className="bg-[#FDFCFA] mx-4 mt-4 rounded-2xl border border-[#EDE9E3] shadow-sm p-5">
           <div className="flex items-start gap-4">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black flex-shrink-0"
               style={{ backgroundColor: avatarColor + '18', color: avatarColor }}>
@@ -92,21 +92,21 @@ export default function ClientDetail() {
 
           {/* Progress */}
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-slate-400 font-medium mb-1.5">
+            <div className="flex justify-between text-xs text-slate-500 font-medium mb-1.5">
               <span>{fmt(client.startDate)}</span>
               <span className="font-bold" style={{ color }}>
                 {days >= 0 ? `${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}` : `Expiré il y a ${Math.abs(days)}j`}
               </span>
             </div>
-            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-[#EDE9E3] rounded-full overflow-hidden">
               <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, backgroundColor: color }} />
             </div>
-            <p className="text-xs text-slate-400 font-medium mt-1 text-right">{fmt(client.expirationDate)}</p>
+            <p className="text-xs text-slate-500 font-medium mt-1 text-right">{fmt(client.expirationDate)}</p>
           </div>
         </div>
 
         {/* Details */}
-        <div className="bg-white mx-4 mt-3 rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-[#FDFCFA] mx-4 mt-3 rounded-2xl border border-[#EDE9E3] shadow-sm overflow-hidden">
           {client.phoneNumber && <DetailRow icon={Phone} label="Téléphone" value={client.phoneNumber} />}
           <DetailRow icon={Calendar} label="Date de début" value={fmt(client.startDate)} />
           <DetailRow icon={Calendar} label="Expiration" value={fmt(client.expirationDate)} />
@@ -129,7 +129,7 @@ export default function ClientDetail() {
       {showRenew && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowRenew(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
             <p className="text-base font-bold text-slate-900 mb-1">Renouveler l'abonnement</p>
             <p className="text-sm text-slate-400 mb-5">{client.name} — {client.subscriptionType}</p>
@@ -140,7 +140,7 @@ export default function ClientDetail() {
                   className={`py-3 rounded-xl text-xs font-bold transition-all press ${
                     parseInt(renewDays) === presetDays
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                      : 'bg-slate-100 text-slate-600'
+                      : 'bg-[#EDE9E3] text-slate-600'
                   }`}>
                   {label}
                 </button>
@@ -148,14 +148,14 @@ export default function ClientDetail() {
             </div>
 
             <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Durée personnalisée</label>
-            <div className="flex items-center bg-slate-100 rounded-xl px-4 py-3 mb-5">
+            <div className="flex items-center bg-[#EDE9E3] rounded-xl px-4 py-3 mb-5">
               <input type="number" value={renewDays} onChange={e => setRenewDays(e.target.value)}
                 className="flex-1 bg-transparent text-sm font-bold text-slate-900 outline-none" />
               <span className="text-xs text-slate-400 font-medium">jours</span>
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => setShowRenew(false)} className="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-semibold text-sm press">
+              <button onClick={() => setShowRenew(false)} className="flex-1 py-3.5 rounded-2xl bg-[#EDE9E3] text-slate-700 font-semibold text-sm press">
                 Annuler
               </button>
               <button onClick={handleRenew} className="flex-1 py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-sm press">
@@ -173,8 +173,8 @@ function DetailRow({ icon: Icon, label, value, last }: {
   icon: React.ElementType; label: string; value: string; last?: boolean
 }) {
   return (
-    <div className={`flex items-center gap-3 px-4 py-3.5 ${!last ? 'border-b border-slate-50' : ''}`}>
-      <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+    <div className={`flex items-center gap-3 px-4 py-3.5 ${!last ? 'border-b border-[#F0EDE8]' : ''}`}>
+      <div className="w-7 h-7 rounded-lg bg-[#EDE9E3] flex items-center justify-center flex-shrink-0">
         <Icon className="w-3.5 h-3.5 text-slate-500" />
       </div>
       <p className="text-sm text-slate-500 w-28 flex-shrink-0">{label}</p>

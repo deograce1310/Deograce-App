@@ -10,8 +10,9 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #F8FAFC;
+  background: #F5F2ED; /* fond chaud crème — moins agressif que le blanc pur */
   overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 html, body, #root {

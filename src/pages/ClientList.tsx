@@ -36,19 +36,19 @@ export default function ClientList() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50">
+    <div className="flex flex-col h-full bg-[#F5F2ED]">
       {/* ── Header ── */}
-      <div className="bg-white safe-top px-5 pt-4 pb-3 border-b border-slate-100">
+      <div className="bg-[#FDFCFA] safe-top px-5 pt-4 pb-3 border-b border-[#EDE9E3]">
         <div className="flex items-center justify-between mb-3">
           <img src="/logo.png" alt="Deograce" className="h-11 object-contain" />
           <div className="flex gap-2">
-            <button className="relative w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center active:bg-slate-200">
+            <button className="relative w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center active:bg-slate-200">
               <Bell className="w-4 h-4 text-slate-600" />
               {totalSoon > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-orange-400 rounded-full ring-2 ring-white" />}
             </button>
             <button
               onClick={() => navigate('/client/new')}
-              className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center active:bg-blue-700 shadow-md shadow-blue-200"
+              className="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center active:bg-blue-700 shadow-md shadow-blue-200"
             >
               <Plus className="w-4 h-4 text-white" />
             </button>
@@ -63,7 +63,7 @@ export default function ClientList() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Rechercher un client ou abonnement..."
-            className="w-full pl-9 pr-8 py-2.5 bg-slate-100 rounded-xl text-sm text-slate-800 placeholder-slate-400 outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-200 transition-all"
+            className="w-full pl-9 pr-8 py-2.5 bg-[#EDE9E3] rounded-xl text-sm text-slate-800 placeholder-slate-400 outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-200 transition-all"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -77,7 +77,7 @@ export default function ClientList() {
         {/* ── Stats row ── */}
         {!search && (
           <div className="px-4 pt-4 pb-2">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="bg-[#FDFCFA] rounded-2xl border border-[#EDE9E3] shadow-sm overflow-hidden">
               <div className="grid grid-cols-3 divide-x divide-slate-100">
                 <StatCell value={totalActive} label="Actifs" color="#16A34A" />
                 <StatCell value={totalSoon}   label="Bientôt" color="#EA580C" />
@@ -162,14 +162,14 @@ export default function ClientList() {
       {deleteConfirm && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setDeleteConfirm(null)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
             <p className="text-base font-bold text-slate-900 text-center mb-1">Supprimer le client</p>
             <p className="text-sm text-slate-500 text-center mb-6">
               <span className="font-semibold text-slate-700">{deleteConfirm.name}</span> sera définitivement supprimé.
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-2xl bg-slate-100 text-slate-700 font-semibold text-sm press">
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 rounded-2xl bg-[#EDE9E3] text-slate-700 font-semibold text-sm press">
                 Annuler
               </button>
               <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-semibold text-sm press">
@@ -198,9 +198,9 @@ function Section({ label, count, color, children }: { label: string; count: numb
       <div className="flex items-center gap-2 mb-2 px-1">
         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{label}</p>
-        <span className="text-xs font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500">{count}</span>
+        <span className="text-xs font-bold px-1.5 py-0.5 rounded-md bg-[#EDE9E3] text-slate-500">{count}</span>
       </div>
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden divide-y divide-slate-50">
+      <div className="bg-[#FDFCFA] rounded-2xl border border-[#EDE9E3] shadow-sm overflow-hidden divide-y divide-[#F0EDE8]">
         {children}
       </div>
     </div>
@@ -235,7 +235,7 @@ function ClientRow({ client, index, onClick, onDelete }: {
 
   return (
     <button
-      className={`w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-slate-50 transition-colors animate-fade-in-up`}
+      className={`w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-[#F5F2ED] transition-colors animate-fade-in-up`}
       style={{ animationDelay: `${index * 0.05}s` }}
       onClick={onClick}
     >
