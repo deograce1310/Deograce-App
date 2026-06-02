@@ -20,9 +20,11 @@ const today = () => new Date().toISOString().split('T')[0]
 
 const DURATION_PRESETS = [
   { label: '1 mois', days: 30 },
+  { label: '2 mois', days: 60 },
   { label: '3 mois', days: 90 },
+  { label: '4 mois', days: 120 },
   { label: '6 mois', days: 180 },
-  { label: '1 an', days: 365 },
+  { label: '1 an',   days: 365 },
 ]
 
 const SUB_SUGGESTIONS = ['Apple Music', 'Netflix', 'Spotify', 'Disney+', 'YouTube Premium', 'Prime Video', 'Canal+', 'Deezer']
@@ -134,12 +136,12 @@ export default function ClientForm() {
             </div>
           )}
           <Divider />
-          <Field label="Prix mensuel (€)" type="number" value={form.price} onChange={set('price')} placeholder="5.99" />
+          <Field label="Prix (FCFA)" type="number" value={form.price} onChange={set('price')} placeholder="5000" />
         </FieldGroup>
 
         {/* Durée */}
         <FieldGroup label="Durée">
-          <div className="px-4 py-3 grid grid-cols-4 gap-2">
+          <div className="px-4 py-3 grid grid-cols-3 gap-2">
             {DURATION_PRESETS.map(({ label, days }) => (
               <button key={days} onClick={() => setDur(days)}
                 className={`py-2.5 rounded-xl text-xs font-bold transition-all press ${

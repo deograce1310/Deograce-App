@@ -7,9 +7,11 @@ import { getStatus, statusLabel, statusColor, getDaysUntilExpiry } from '../type
 
 const RENEW_PRESETS = [
   { label: '1 mois', days: 30 },
+  { label: '2 mois', days: 60 },
   { label: '3 mois', days: 90 },
+  { label: '4 mois', days: 120 },
   { label: '6 mois', days: 180 },
-  { label: '1 an', days: 365 },
+  { label: '1 an',   days: 365 },
 ]
 
 export default function ClientDetail() {
@@ -88,7 +90,7 @@ export default function ClientDetail() {
                   {statusLabel(status)}
                 </span>
                 {client.price > 0 && (
-                  <span className="text-xs text-slate-400 font-medium">{client.price} €/mois</span>
+                  <span className="text-xs text-slate-400 font-medium">{client.price.toLocaleString('fr-FR')} FCFA</span>
                 )}
               </div>
             </div>
@@ -115,7 +117,7 @@ export default function ClientDetail() {
           <DetailRow icon={Calendar} label="Date de début" value={fmt(client.startDate)} />
           <DetailRow icon={Calendar} label="Expiration" value={fmt(client.expirationDate)} />
           <DetailRow icon={Clock} label="Durée" value={`${client.durationDays} jours`} />
-          {client.price > 0 && <DetailRow icon={DollarSign} label="Prix mensuel" value={`${client.price} €`} />}
+          {client.price > 0 && <DetailRow icon={DollarSign} label="Prix" value={`${client.price.toLocaleString('fr-FR')} FCFA`} />}
           {client.notes && <DetailRow icon={FileText} label="Notes" value={client.notes} last />}
         </div>
 
@@ -169,7 +171,7 @@ export default function ClientDetail() {
             <p className="text-base font-bold text-slate-900 mb-1">Renouveler l'abonnement</p>
             <p className="text-sm text-slate-400 mb-5">{client.name} — {client.subscriptionType}</p>
 
-            <div className="grid grid-cols-4 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4">
               {RENEW_PRESETS.map(({ label, days: presetDays }) => (
                 <button key={presetDays} onClick={() => setRenewDays(String(presetDays))}
                   className={`py-3 rounded-xl text-xs font-bold transition-all press ${
