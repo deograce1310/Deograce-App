@@ -4,6 +4,7 @@ import { Plus, Search, X, Bell } from 'lucide-react'
 import { getClients, deleteClient } from '../storage/clientStorage'
 import type { Client } from '../types/client'
 import { getStatus, statusLabel, statusColor, getDaysUntilExpiry } from '../types/client'
+import Logo from '../components/Logo'
 
 export default function ClientList() {
   const [clients, setClients] = useState<Client[]>([])
@@ -58,9 +59,12 @@ export default function ClientList() {
             </div>
           ) : (
             <>
-              <div>
-                <p className="text-white/60 text-xs font-medium uppercase tracking-widest">Gestionnaire</p>
-                <h1 className="text-white text-2xl font-bold mt-0.5">Abonnements</h1>
+              <div className="flex items-center gap-3">
+                <Logo size={40} />
+                <div>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-widest">Gestionnaire</p>
+                  <h1 className="text-white text-xl font-bold mt-0.5">Deograce Abonnements</h1>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => setShowSearch(true)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors">

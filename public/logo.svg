@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="60%" style="stop-color:#1E3A8A"/>
+      <stop offset="100%" style="stop-color:#2563EB"/>
+    </linearGradient>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA"/>
+      <stop offset="100%" style="stop-color:#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+
+  <!-- Letter D -->
+  <text x="130" y="350"
+    font-family="Arial Black, Arial, sans-serif"
+    font-size="280"
+    font-weight="900"
+    fill="url(#iconGrad)"
+    letter-spacing="-10">D</text>
+
+  <!-- Circular arrows (subscription symbol) top-right -->
+  <g transform="translate(320, 110) scale(0.9)">
+    <!-- Circle arc top -->
+    <path d="M 60 0 A 60 60 0 0 1 120 60" stroke="white" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <!-- Circle arc bottom -->
+    <path d="M 60 120 A 60 60 0 0 1 0 60" stroke="white" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <!-- Arrow head top right -->
+    <polyline points="108,20 120,60 80,55" stroke="white" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+    <!-- Arrow head bottom left -->
+    <polyline points="12,100 0,60 40,65" stroke="white" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  </g>
+
+  <!-- Bell notification dot -->
+  <circle cx="400" cy="380" r="28" fill="#3B82F6" opacity="0.85"/>
+  <circle cx="400" cy="380" r="14" fill="white" opacity="0.95"/>
+</svg>

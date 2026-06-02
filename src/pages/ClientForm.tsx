@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Check } from 'lucide-react'
 import { getClient, saveClient, generateId } from '../storage/clientStorage'
 import type { Client } from '../types/client'
+import Logo from '../components/Logo'
 
 interface FormState {
   name: string
@@ -104,9 +105,12 @@ export default function ClientForm() {
           <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center press">
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <div>
-            <p className="text-white/60 text-xs uppercase tracking-widest">{isEdit ? 'Modification' : 'Nouveau'}</p>
-            <h1 className="text-white text-xl font-bold">{isEdit ? 'Modifier le client' : 'Ajouter un client'}</h1>
+          <div className="flex items-center gap-3">
+            <Logo size={36} />
+            <div>
+              <p className="text-white/60 text-xs uppercase tracking-widest">{isEdit ? 'Modification' : 'Nouveau'}</p>
+              <h1 className="text-white text-xl font-bold">{isEdit ? 'Modifier le client' : 'Ajouter un client'}</h1>
+            </div>
           </div>
         </div>
       </div>

@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'Deograce Abonnements',
-        short_name: 'Abonnements',
+        short_name: 'Deograce',
         description: 'Gestionnaire d\'abonnements clients',
         theme_color: '#1565C0',
         background_color: '#F5F7FA',
