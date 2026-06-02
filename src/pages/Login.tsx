@@ -58,7 +58,12 @@ export default function Login() {
   const handleGoogle = () => {
     setLoading(true)
     clearError()
+    const timeout = setTimeout(() => {
+      setLoading(false)
+      setError('Connexion impossible. Vérifiez votre connexion et réessayez.')
+    }, 10000)
     signInWithRedirect(auth, googleProvider).catch((e: unknown) => {
+      clearTimeout(timeout)
       const code = (e as { code?: string }).code ?? ''
       setError(friendlyError(code))
       setLoading(false)
