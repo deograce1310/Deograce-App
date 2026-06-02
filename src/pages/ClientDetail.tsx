@@ -56,7 +56,7 @@ export default function ClientDetail() {
 
   const handleRenew = async () => {
     if (!user) return
-    const d = parseInt(renewDays) || 30
+    const d = Math.max(1, Math.min(3650, parseInt(renewDays) || 30))
     const expiry = new Date()
     expiry.setDate(expiry.getDate() + d)
     const updated: Client = {

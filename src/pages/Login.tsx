@@ -23,8 +23,8 @@ export default function Login() {
       'auth/email-already-in-use':     'Cet email est déjà utilisé.',
       'auth/weak-password':            'Le mot de passe doit contenir au moins 6 caractères.',
       'auth/invalid-email':            'Adresse email invalide.',
-      'auth/user-not-found':           'Aucun compte avec cet email.',
-      'auth/wrong-password':           'Mot de passe incorrect.',
+      'auth/user-not-found':           'Email ou mot de passe incorrect.',
+      'auth/wrong-password':           'Email ou mot de passe incorrect.',
       'auth/popup-closed-by-user':     'Connexion annulée.',
       'auth/network-request-failed':   'Erreur réseau. Vérifiez votre connexion.',
     }

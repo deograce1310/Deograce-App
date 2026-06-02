@@ -44,15 +44,15 @@ export function checkAndNotify(clients: Client[]) {
     if (notified[notifKey]) return
 
     if (days === 0) {
-      new Notification("⚠️ Abonnement expiré aujourd'hui", {
-        body: `L'abonnement ${client.subscriptionType} de ${client.name} expire aujourd'hui !`,
+      new Notification("⚠️ Un abonnement expire aujourd'hui", {
+        body: `Un abonnement arrive à échéance aujourd'hui. Ouvrez l'app pour renouveler.`,
         icon: '/icon-192.png',
         tag: notifKey
       })
       markNotified(notifKey, today)
     } else if (days > 0 && days <= 2) {
       new Notification(`⏰ Expiration dans ${days} jour${days > 1 ? 's' : ''}`, {
-        body: `${client.name} — ${client.subscriptionType} expire dans ${days} jour${days > 1 ? 's' : ''}.`,
+        body: `Un abonnement expire bientôt. Ouvrez l'app pour renouveler.`,
         icon: '/icon-192.png',
         tag: notifKey
       })
@@ -60,7 +60,7 @@ export function checkAndNotify(clients: Client[]) {
     } else if (days < 0 && Math.abs(days) % 3 === 0) {
       const elapsed = Math.abs(days)
       new Notification(`🔴 Abonnement non renouvelé — ${elapsed}j de retard`, {
-        body: `${client.name} — ${client.subscriptionType} n'a toujours pas été renouvelé.`,
+        body: `Un abonnement n'a toujours pas été renouvelé. Ouvrez l'app pour agir.`,
         icon: '/icon-192.png',
         tag: notifKey
       })

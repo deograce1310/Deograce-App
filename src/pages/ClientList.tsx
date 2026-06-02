@@ -67,7 +67,7 @@ export default function ClientList() {
               onClick={() => setShowProfile(true)}
               className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center active:bg-slate-200 overflow-hidden"
             >
-              {user?.photoURL?.startsWith('https://')
+              {user?.photoURL?.startsWith('https://lh3.googleusercontent.com/')
                 ? <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
                 : <span className="text-sm font-bold text-slate-600">{(user?.email ?? 'U')[0].toUpperCase()}</span>}
             </button>
@@ -188,7 +188,7 @@ export default function ClientList() {
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
             <div className="flex items-center gap-4 mb-6">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {user?.photoURL?.startsWith('https://')
+                {user?.photoURL?.startsWith('https://lh3.googleusercontent.com/')
                   ? <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
                   : <span className="text-2xl font-black text-blue-500">{(user?.email ?? 'U')[0].toUpperCase()}</span>}
               </div>

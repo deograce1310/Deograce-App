@@ -5,24 +5,37 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if request.auth != null
         && request.auth.uid == userId
-        && request.resource.data.keys().hasAll([
+        // Exact field set — no extra fields allowed
+        && request.resource.data.keys().hasOnly([
             'id', 'name', 'phoneNumber', 'subscriptionType',
             'startDate', 'durationDays', 'expirationDate',
             'price', 'notes', 'isActive', 'createdAt'
            ])
+        // Type checks
         && request.resource.data.name is string
-        && request.resource.data.name.size() <= 200
         && request.resource.data.phoneNumber is string
         && request.resource.data.subscriptionType is string
-        && request.resource.data.subscriptionType.size() <= 200
+        && request.resource.data.startDate is string
+        && request.resource.data.expirationDate is string
+        && request.resource.data.createdAt is string
         && request.resource.data.notes is string
-        && request.resource.data.notes.size() <= 2000
+        && request.resource.data.id is string
         && request.resource.data.durationDays is int
+        && request.resource.data.price is number
+        && request.resource.data.isActive is bool
+        // Size limits — prevents storage bomb DoS
+        && request.resource.data.id.size() <= 36
+        && request.resource.data.name.size() <= 200
+        && request.resource.data.phoneNumber.size() <= 30
+        && request.resource.data.subscriptionType.size() <= 200
+        && request.resource.data.startDate.size() <= 10
+        && request.resource.data.expirationDate.size() <= 10
+        && request.resource.data.createdAt.size() <= 30
+        && request.resource.data.notes.size() <= 2000
+        // Value bounds
         && request.resource.data.durationDays >= 0
         && request.resource.data.durationDays <= 3650
-        && request.resource.data.price is number
-        && request.resource.data.price >= 0
-        && request.resource.data.isActive is bool;
+        && request.resource.data.price >= 0;
     }
   }
 }
