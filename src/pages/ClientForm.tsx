@@ -54,9 +54,20 @@ export default function ClientForm() {
     const v = e.target.value
     setForm(p => {
       const n = { ...p, [field]: v }
-      if (field === 'startDate' || field === 'durationDays') {
-        const dur = parseInt(field === 'durationDays' ? v : p.durationDays) || 0
-        n.expirationDate = addDays(field === 'startDate' ? v : p.startDate, dur)
+      if (field === 'startDate') {
+        // Début change → recalcule fin à partir de la durée existante
+        const dur = parseInt(p.durationDays) || 0
+        n.expirationDate = addDays(v, dur)
+      } else if (field === 'durationDays') {
+        // Durée change → recalcule fin à partir du début existant
+        const dur = parseInt(v) || 0
+        n.expirationDate = addDays(p.startDate, dur)
+      } else if (field === 'expirationDate' && v) {
+        // Fin change → recalcule durée en jours entre début et fin
+        const start = new Date(p.startDate)
+        const end = new Date(v)
+        const diff = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+        n.durationDays = diff > 0 ? String(diff) : '0'
       }
       return n
     })
