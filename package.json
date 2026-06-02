@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup:firebase": "node setup-firebase.mjs"
   },
   "dependencies": {
     "firebase": "^12.14.0",
