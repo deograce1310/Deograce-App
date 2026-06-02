@@ -98,18 +98,16 @@ export default function ClientForm() {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {/* Header */}
-      <div className="header-gradient safe-top px-5 pt-5 pb-6 shadow-xl">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center press">
-            <ArrowLeft className="w-5 h-5 text-white" />
+      {/* Header blanc */}
+      <div className="bg-white safe-top px-5 pt-4 pb-4 shadow-sm border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center press">
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Deograce" className="w-9 h-9 object-contain drop-shadow-lg" />
-            <div>
-              <p className="text-white/60 text-xs uppercase tracking-widest">{isEdit ? 'Modification' : 'Nouveau'}</p>
-              <h1 className="text-white text-xl font-bold">{isEdit ? 'Modifier le client' : 'Ajouter un client'}</h1>
-            </div>
+          <img src="/logo.png" alt="Deograce" className="w-10 h-10 object-contain" />
+          <div>
+            <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">{isEdit ? 'Modification' : 'Nouveau client'}</p>
+            <h1 className="text-gray-900 text-lg font-extrabold leading-tight">{isEdit ? 'Modifier le client' : 'Ajouter un client'}</h1>
           </div>
         </div>
       </div>

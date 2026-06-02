@@ -58,41 +58,39 @@ export default function ClientDetail() {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {/* Header */}
-      <div className="header-gradient safe-top px-5 pt-5 pb-8 shadow-xl relative overflow-hidden">
-        {/* background decoration */}
-        <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/5" />
-        <div className="absolute -right-4 top-10 w-24 h-24 rounded-full bg-white/5" />
-
-        <div className="flex items-center justify-between mb-5 relative">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center press">
-            <ArrowLeft className="w-5 h-5 text-white" />
+      {/* Header blanc */}
+      <div className="bg-white safe-top px-5 pt-4 pb-4 shadow-sm border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center press">
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <button onClick={() => navigate(`/client/${id}/edit`)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center press">
-            <Edit3 className="w-5 h-5 text-white" />
+          <img src="/logo.png" alt="Deograce" className="w-10 h-10 object-contain" />
+          <button onClick={() => navigate(`/client/${id}/edit`)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center press">
+            <Edit3 className="w-5 h-5 text-gray-700" />
           </button>
         </div>
+      </div>
 
-        <div className="flex items-center gap-4 relative animate-fade-in-up">
-          <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
-            <span className="text-white text-2xl font-bold">{client.name.charAt(0).toUpperCase()}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-white text-xl font-bold truncate">{client.name}</h1>
-            <p className="text-white/70 text-sm">{client.subscriptionType}</p>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ color, backgroundColor: color + '33' }}>
-                {statusLabel(status)}
-              </span>
-              {client.price > 0 && (
-                <span className="text-xs text-white/60">{client.price} €/mois</span>
-              )}
-            </div>
+      {/* Profil client */}
+      <div className="px-5 pt-5 pb-5 flex items-center gap-4 bg-white border-b border-gray-100 animate-fade-in-up">
+        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow-md flex-shrink-0`}>
+          <span className="text-white text-2xl font-bold">{client.name.charAt(0).toUpperCase()}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-gray-900 text-xl font-extrabold truncate">{client.name}</h1>
+          <p className="text-blue-500 text-sm font-semibold">{client.subscriptionType}</p>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ color, backgroundColor: color + '22' }}>
+              {statusLabel(status)}
+            </span>
+            {client.price > 0 && (
+              <span className="text-xs text-gray-400 font-medium">{client.price} €/mois</span>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-28 -mt-3">
+      <div className="flex-1 overflow-y-auto px-4 pb-28 pt-4">
         {/* Progress card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4 animate-fade-in-up">
           <div className="flex items-center justify-between mb-3">

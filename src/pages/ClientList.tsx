@@ -39,53 +39,51 @@ export default function ClientList() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="header-gradient safe-top px-5 pt-5 pb-6 shadow-xl">
-        <div className="flex items-center justify-between mb-5">
-          {showSearch ? (
-            <div className="flex items-center gap-2 flex-1 animate-fade-in">
-              <input
-                ref={searchRef}
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Nom, téléphone, abonnement..."
-                className="flex-1 bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-xl px-4 py-2 text-sm outline-none focus:bg-white/20 transition-colors"
-              />
-              <button onClick={() => { setShowSearch(false); setSearch('') }} className="text-white/80 p-1">
-                <X className="w-5 h-5" />
+      {/* Header blanc */}
+      <div className="bg-white safe-top px-5 pt-4 pb-4 shadow-sm border-b border-gray-100">
+        {showSearch ? (
+          <div className="flex items-center gap-2 animate-fade-in">
+            <input
+              ref={searchRef}
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Nom, téléphone, abonnement..."
+              className="flex-1 bg-gray-100 text-gray-800 placeholder-gray-400 rounded-xl px-4 py-2.5 text-sm outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-200 transition-all"
+            />
+            <button onClick={() => { setShowSearch(false); setSearch('') }} className="text-gray-400 p-1">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="Deograce" className="w-12 h-12 object-contain" />
+              <div>
+                <h1 className="text-gray-900 text-lg font-extrabold leading-tight">deograce</h1>
+                <p className="text-blue-500 text-sm font-semibold leading-tight">abonnements</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowSearch(true)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors">
+                <Search className="w-5 h-5 text-gray-600" />
+              </button>
+              <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active:bg-gray-200 transition-colors relative">
+                <Bell className="w-5 h-5 text-gray-600" />
+                {soon > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-400 rounded-full" />
+                )}
               </button>
             </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Deograce" className="w-10 h-10 object-contain drop-shadow-lg" />
-                <div>
-                  <p className="text-white/60 text-xs font-medium uppercase tracking-widest">Gestionnaire</p>
-                  <h1 className="text-white text-xl font-bold mt-0.5">Deograce Abonnements</h1>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setShowSearch(true)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors">
-                  <Search className="w-5 h-5 text-white" />
-                </button>
-                <button className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors relative">
-                  <Bell className="w-5 h-5 text-white" />
-                  {soon > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-orange-400 rounded-full" />
-                  )}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-2">
-          <StatCard label="Actifs" count={active} color="#4ADE80" icon="✓" />
-          <StatCard label="Bientôt" count={soon} color="#FB923C" icon="⏰" />
-          <StatCard label="Expirés" count={expired} color="#F87171" icon="✗" />
-        </div>
+      {/* Stats bar */}
+      <div className="bg-white px-4 pt-3 pb-4 grid grid-cols-3 gap-2 border-b border-gray-100">
+        <StatCard label="Actifs" count={active} color="#16A34A" bg="#F0FDF4" />
+        <StatCard label="Bientôt" count={soon} color="#EA580C" bg="#FFF7ED" />
+        <StatCard label="Expirés" count={expired} color="#DC2626" bg="#FEF2F2" />
       </div>
 
       {/* List */}
@@ -150,11 +148,11 @@ export default function ClientList() {
   )
 }
 
-function StatCard({ label, count, color, icon }: { label: string; count: number; color: string; icon: string }) {
+function StatCard({ label, count, color, bg }: { label: string; count: number; color: string; bg: string }) {
   return (
-    <div className="rounded-2xl bg-white/10 border border-white/10 px-3 py-2.5 text-center">
-      <p className="text-2xl font-bold text-white">{count}</p>
-      <p className="text-xs mt-0.5" style={{ color }}>{label}</p>
+    <div className="rounded-xl px-3 py-2.5 text-center" style={{ backgroundColor: bg }}>
+      <p className="text-2xl font-bold" style={{ color }}>{count}</p>
+      <p className="text-xs font-semibold mt-0.5" style={{ color }}>{label}</p>
     </div>
   )
 }
