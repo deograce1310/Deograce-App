@@ -6,7 +6,7 @@ const col = (uid: string) => collection(db, 'users', uid, 'clients')
 const ref = (uid: string, id: string) => doc(db, 'users', uid, 'clients', id)
 
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return crypto.randomUUID()
 }
 
 export async function saveClient(uid: string, client: Client): Promise<void> {
