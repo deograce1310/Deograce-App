@@ -140,7 +140,7 @@ export default function ClientForm() {
             {isEdit ? 'Modifier le client' : 'Ajouter un client'}
           </p>
         </div>
-        <img src="/logo.png" alt="" className="h-9 object-contain opacity-60" />
+        <img src="/logo.png" alt="" className="h-9 object-contain mix-blend-multiply" />
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pt-5 pb-32 space-y-5 animate-fade-in-up">

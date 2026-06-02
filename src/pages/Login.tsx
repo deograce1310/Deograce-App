@@ -64,7 +64,7 @@ export default function Login() {
     <div className="flex flex-col h-full bg-[#F5F2ED] safe-top">
       {/* Top area with logo */}
       <div className="flex flex-col items-center pt-16 pb-8 px-6">
-        <img src="/logo.png" alt="Deograce" className="h-20 object-contain mb-6" />
+        <img src="/logo.png" alt="Deograce" className="h-20 object-contain mb-6 mix-blend-multiply" />
         <p className="text-2xl font-black text-slate-900 text-center">Bienvenue</p>
         <p className="text-sm text-slate-400 text-center mt-1">Connectez-vous pour accéder à vos clients</p>
       </div>
