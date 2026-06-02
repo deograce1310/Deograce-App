@@ -40,7 +40,7 @@ export default function ClientList() {
       {/* ── Header ── */}
       <div className="bg-[#FDFCFA] safe-top px-5 pt-4 pb-3 border-b border-[#EDE9E3]">
         <div className="flex items-center justify-between mb-3">
-          <img src="/logo.png" alt="Deograce" className="h-11 object-contain" />
+          <img src="/logo.png" alt="Deograce" className="h-14 object-contain" />
           <div className="flex gap-2">
             <button className="relative w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center active:bg-slate-200">
               <Bell className="w-4 h-4 text-slate-600" />
