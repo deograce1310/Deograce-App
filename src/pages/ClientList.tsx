@@ -79,9 +79,9 @@ export default function ClientList() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
-          <StatCard label="Actifs" count={active} color="#4ADE80" />
-          <StatCard label="Bientôt" count={soon} color="#FB923C" />
-          <StatCard label="Expirés" count={expired} color="#F87171" />
+          <StatCard label="Actifs" count={active} color="#4ADE80" icon="✓" />
+          <StatCard label="Bientôt" count={soon} color="#FB923C" icon="⏰" />
+          <StatCard label="Expirés" count={expired} color="#F87171" icon="✗" />
         </div>
       </div>
 
@@ -147,7 +147,7 @@ export default function ClientList() {
   )
 }
 
-function StatCard({ label, count, color }: { label: string; count: number; color: string }) {
+function StatCard({ label, count, color, icon }: { label: string; count: number; color: string; icon: string }) {
   return (
     <div className="rounded-2xl bg-white/10 border border-white/10 px-3 py-2.5 text-center">
       <p className="text-2xl font-bold text-white">{count}</p>
