@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #F5F2ED; /* fond chaud crème — moins agressif que le blanc pur */
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+}
+
+.safe-top { padding-top: env(safe-area-inset-top, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.35s ease both; }
+.animate-fade-in    { animation: fadeIn 0.25s ease both; }
+.animate-slide-up   { animation: slideUp 0.35s cubic-bezier(0.32,0.72,0,1) both; }
+.animate-scale-in   { animation: scaleIn 0.2s ease both; }
+
+.card-delay-1 { animation-delay: 0.05s; }
+.card-delay-2 { animation-delay: 0.10s; }
+.card-delay-3 { animation-delay: 0.15s; }
+.card-delay-4 { animation-delay: 0.20s; }
+.card-delay-5 { animation-delay: 0.25s; }
+
+/* gradient header */
+.header-gradient {
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 60%, #1D4ED8 100%);
+}
+
+/* glass card */
+.glass {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* active press */
+.press:active { transform: scale(0.97); transition: transform 0.1s; }
