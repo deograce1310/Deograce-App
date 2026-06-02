@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Edit3, RefreshCw, Phone, Calendar, Clock, DollarSign, FileText, Trash2, Check } from 'lucide-react'
 import { getClient, saveClient, deleteClient } from '../storage/clientStorage'
+import { useAuth } from '../contexts/AuthContext'
 import type { Client } from '../types/client'
 import { getStatus, statusLabel, statusColor, getDaysUntilExpiry } from '../types/client'
 
@@ -23,12 +24,17 @@ const RENEW_PRESETS = [
 export default function ClientDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [client, setClient] = useState<Client | null>(null)
   const [showRenew, setShowRenew] = useState(false)
   const [renewDays, setRenewDays] = useState('30')
   const [showDelete, setShowDelete] = useState(false)
 
-  useEffect(() => { if (id) setClient(getClient(id) || null) }, [id])
+  useEffect(() => {
+    if (id && user) {
+      getClient(user.uid, id).then(c => setClient(c))
+    }
+  }, [id, user])
 
   if (!client) return (
     <div className="flex items-center justify-center h-full bg-[#F5F2ED]">
@@ -48,7 +54,8 @@ export default function ClientDetail() {
   }
   const avatarColor = avatarColors[status]
 
-  const handleRenew = () => {
+  const handleRenew = async () => {
+    if (!user) return
     const d = parseInt(renewDays) || 30
     const expiry = new Date()
     expiry.setDate(expiry.getDate() + d)
@@ -59,9 +66,15 @@ export default function ClientDetail() {
       expirationDate: expiry.toISOString().split('T')[0],
       isActive: true
     }
-    saveClient(updated)
+    await saveClient(user.uid, updated)
     setClient(updated)
     setShowRenew(false)
+  }
+
+  const handleDelete = async () => {
+    if (!user) return
+    await deleteClient(user.uid, client.id)
+    navigate('/')
   }
 
   return (
@@ -159,7 +172,7 @@ export default function ClientDetail() {
                 className="flex-1 py-3.5 rounded-2xl bg-[#EDE9E3] text-slate-700 font-semibold text-sm press">
                 Annuler
               </button>
-              <button onClick={() => { deleteClient(client.id); navigate('/') }}
+              <button onClick={handleDelete}
                 className="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-bold text-sm press">
                 Supprimer
               </button>

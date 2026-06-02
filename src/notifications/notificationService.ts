@@ -1,4 +1,4 @@
-import { getClients } from '../storage/clientStorage'
+import type { Client } from '../types/client'
 import { getDaysUntilExpiry } from '../types/client'
 
 const NOTIF_KEY = 'deograce_notified'
@@ -20,10 +20,9 @@ export async function requestNotificationPermission(): Promise<boolean> {
   return result === 'granted'
 }
 
-export function checkAndNotify() {
+export function checkAndNotify(clients: Client[]) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return
 
-  const clients = getClients()
   const today = new Date().toISOString().split('T')[0]
   const notified = getNotified()
 

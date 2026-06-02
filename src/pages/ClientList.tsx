@@ -1,17 +1,34 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, X, Bell, ChevronRight } from 'lucide-react'
-import { getClients, deleteClient } from '../storage/clientStorage'
+import { Plus, Search, X, Bell, ChevronRight, LogOut } from 'lucide-react'
+import { subscribeToClients, deleteClient } from '../storage/clientStorage'
+import { useAuth } from '../contexts/AuthContext'
+import { requestNotificationPermission, checkAndNotify } from '../notifications/notificationService'
 import type { Client } from '../types/client'
 import { getStatus, statusColor, getDaysUntilExpiry } from '../types/client'
 
 export default function ClientList() {
+  const { user, logout } = useAuth()
   const [clients, setClients] = useState<Client[]>([])
   const [search, setSearch] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState<Client | null>(null)
+  const [showProfile, setShowProfile] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => { setClients(getClients()) }, [])
+  useEffect(() => {
+    if (!user) return
+    let notified = false
+    const unsub = subscribeToClients(user.uid, loaded => {
+      setClients(loaded)
+      if (!notified) {
+        notified = true
+        requestNotificationPermission().then(granted => {
+          if (granted) checkAndNotify(loaded)
+        })
+      }
+    })
+    return unsub
+  }, [user])
 
   const all = search
     ? clients.filter(c =>
@@ -29,9 +46,9 @@ export default function ClientList() {
   const totalSoon   = clients.filter(c => getStatus(c) === 'expiring_soon').length
   const totalExp    = clients.filter(c => getStatus(c) === 'expired').length
 
-  const handleDelete = (client: Client) => {
-    deleteClient(client.id)
-    setClients(getClients())
+  const handleDelete = async (client: Client) => {
+    if (!user) return
+    await deleteClient(user.uid, client.id)
     setDeleteConfirm(null)
   }
 
@@ -45,6 +62,14 @@ export default function ClientList() {
             <button className="relative w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center active:bg-slate-200">
               <Bell className="w-4 h-4 text-slate-600" />
               {totalSoon > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-orange-400 rounded-full ring-2 ring-white" />}
+            </button>
+            <button
+              onClick={() => setShowProfile(true)}
+              className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center active:bg-slate-200 overflow-hidden"
+            >
+              {user?.photoURL
+                ? <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
+                : <span className="text-sm font-bold text-slate-600">{(user?.email ?? 'U')[0].toUpperCase()}</span>}
             </button>
             <button
               onClick={() => navigate('/client/new')}
@@ -79,9 +104,9 @@ export default function ClientList() {
           <div className="px-4 pt-4 pb-2">
             <div className="bg-[#FDFCFA] rounded-2xl border border-[#EDE9E3] shadow-sm overflow-hidden">
               <div className="grid grid-cols-3 divide-x divide-slate-100">
-                <StatCell value={totalActive} label="Actifs" color="#16A34A" />
-                <StatCell value={totalSoon}   label="Bientôt" color="#EA580C" />
-                <StatCell value={totalExp}    label="Expirés" color="#DC2626" />
+                <StatCell value={totalActive} label="Actifs"   color="#16A34A" />
+                <StatCell value={totalSoon}   label="Bientôt"  color="#EA580C" />
+                <StatCell value={totalExp}    label="Expirés"  color="#DC2626" />
               </div>
             </div>
           </div>
@@ -124,7 +149,6 @@ export default function ClientList() {
           </div>
         )}
 
-        {/* ── Urgent section ── */}
         {urgent.length > 0 && (
           <Section label="À renouveler" count={urgent.length} color="#EA580C">
             {urgent.map((c, i) => (
@@ -135,7 +159,6 @@ export default function ClientList() {
           </Section>
         )}
 
-        {/* ── Active section ── */}
         {active.length > 0 && (
           <Section label="Actifs" count={active.length} color="#16A34A">
             {active.map((c, i) => (
@@ -146,7 +169,6 @@ export default function ClientList() {
           </Section>
         )}
 
-        {/* ── Inactive section ── */}
         {inactive.length > 0 && (
           <Section label="Inactifs" count={inactive.length} color="#94A3B8">
             {inactive.map((c, i) => (
@@ -157,6 +179,32 @@ export default function ClientList() {
           </Section>
         )}
       </div>
+
+      {/* ── Profile sheet ── */}
+      {showProfile && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowProfile(false)} />
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+            <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                {user?.photoURL
+                  ? <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-2xl font-black text-blue-500">{(user?.email ?? 'U')[0].toUpperCase()}</span>}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-slate-900 truncate">{user?.displayName ?? 'Mon compte'}</p>
+                <p className="text-sm text-slate-400 truncate">{user?.email}</p>
+              </div>
+            </div>
+            <button onClick={() => { setShowProfile(false); logout() }}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-50 border border-red-100 text-red-600 font-semibold text-sm press">
+              <LogOut className="w-4 h-4" />
+              Se déconnecter
+            </button>
+          </div>
+        </>
+      )}
 
       {/* ── Delete sheet ── */}
       {deleteConfirm && (
@@ -215,7 +263,6 @@ function ClientRow({ client, index, onClick, onDelete }: {
   const days   = getDaysUntilExpiry(client)
   const initial = client.name.charAt(0).toUpperCase()
 
-  // onDelete is available for future use (long-press, swipe, etc.)
   void onDelete
 
   const avatarColors: Record<string, string> = {
@@ -227,31 +274,22 @@ function ClientRow({ client, index, onClick, onDelete }: {
   const avatarBg = avatarColors[status] + '22'
   const avatarFg = avatarColors[status]
 
-  const dayLabel = days > 0
-    ? `${days}j`
-    : days === 0
-    ? 'Auj.'
-    : `−${Math.abs(days)}j`
+  const dayLabel = days > 0 ? `${days}j` : days === 0 ? 'Auj.' : `−${Math.abs(days)}j`
 
   return (
     <button
-      className={`w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-[#F5F2ED] transition-colors animate-fade-in-up`}
+      className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-[#F5F2ED] transition-colors animate-fade-in-up"
       style={{ animationDelay: `${index * 0.05}s` }}
       onClick={onClick}
     >
-      {/* Avatar */}
       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-base"
         style={{ backgroundColor: avatarBg, color: avatarFg }}>
         {initial}
       </div>
-
-      {/* Text */}
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-slate-900 text-sm truncate">{client.name}</p>
         <p className="text-xs text-slate-400 truncate mt-0.5">{client.subscriptionType}{client.phoneNumber ? ` · ${client.phoneNumber}` : ''}</p>
       </div>
-
-      {/* Days badge */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
         <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ color, backgroundColor: color + '18' }}>
           {dayLabel}

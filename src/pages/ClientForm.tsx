@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ChevronRight, Search, Check } from 'lucide-react'
 import { getClient, saveClient, generateId } from '../storage/clientStorage'
+import { useAuth } from '../contexts/AuthContext'
 import type { Client } from '../types/client'
 
 interface FormState {
@@ -42,6 +43,7 @@ const SUB_LIST = [
 export default function ClientForm() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { user } = useAuth()
   const isEdit = !!id
 
   const [form, setForm] = useState<FormState>({
@@ -56,15 +58,16 @@ export default function ClientForm() {
   const subSearchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (id) {
-      const c = getClient(id)
-      if (c) setForm({
-        name: c.name, phoneNumber: c.phoneNumber, subscriptionType: c.subscriptionType,
-        startDate: c.startDate, durationDays: String(c.durationDays),
-        expirationDate: c.expirationDate, price: c.price ? String(c.price) : '', notes: c.notes
+    if (id && user) {
+      getClient(user.uid, id).then(c => {
+        if (c) setForm({
+          name: c.name, phoneNumber: c.phoneNumber, subscriptionType: c.subscriptionType,
+          startDate: c.startDate, durationDays: String(c.durationDays),
+          expirationDate: c.expirationDate, price: c.price ? String(c.price) : '', notes: c.notes
+        })
       })
     }
-  }, [id])
+  }, [id, user])
 
   useEffect(() => {
     if (showSubPicker) {
@@ -103,10 +106,11 @@ export default function ClientForm() {
     setShowSubPicker(false)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) { setError('Le nom est obligatoire'); return }
     if (!form.subscriptionType.trim()) { setError("Le type d'abonnement est obligatoire"); return }
-    saveClient({
+    if (!user) return
+    await saveClient(user.uid, {
       id: id || generateId(), name: form.name.trim(), phoneNumber: form.phoneNumber.trim(),
       subscriptionType: form.subscriptionType.trim(), startDate: form.startDate,
       durationDays: parseInt(form.durationDays) || 30, expirationDate: form.expirationDate,
