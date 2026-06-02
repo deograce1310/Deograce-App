@@ -4,7 +4,6 @@ import { Plus, Search, X, Bell } from 'lucide-react'
 import { getClients, deleteClient } from '../storage/clientStorage'
 import type { Client } from '../types/client'
 import { getStatus, statusLabel, statusColor, getDaysUntilExpiry } from '../types/client'
-import Logo from '../components/Logo'
 
 export default function ClientList() {
   const [clients, setClients] = useState<Client[]>([])
@@ -60,7 +59,7 @@ export default function ClientList() {
           ) : (
             <>
               <div className="flex items-center gap-3">
-                <Logo size={40} />
+                <img src="/logo.png" alt="Deograce" className="w-10 h-10 object-contain drop-shadow-lg" />
                 <div>
                   <p className="text-white/60 text-xs font-medium uppercase tracking-widest">Gestionnaire</p>
                   <h1 className="text-white text-xl font-bold mt-0.5">Deograce Abonnements</h1>

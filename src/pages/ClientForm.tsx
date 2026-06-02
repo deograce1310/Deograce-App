@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Check } from 'lucide-react'
 import { getClient, saveClient, generateId } from '../storage/clientStorage'
 import type { Client } from '../types/client'
-import Logo from '../components/Logo'
 
 interface FormState {
   name: string
@@ -106,7 +105,7 @@ export default function ClientForm() {
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
           <div className="flex items-center gap-3">
-            <Logo size={36} />
+            <img src="/logo.png" alt="Deograce" className="w-9 h-9 object-contain drop-shadow-lg" />
             <div>
               <p className="text-white/60 text-xs uppercase tracking-widest">{isEdit ? 'Modification' : 'Nouveau'}</p>
               <h1 className="text-white text-xl font-bold">{isEdit ? 'Modifier le client' : 'Ajouter un client'}</h1>
