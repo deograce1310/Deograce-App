@@ -28,7 +28,7 @@ export default function Login() {
       'auth/wrong-password':         'Email ou mot de passe incorrect.',
       'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion.',
     }
-    return map[code] ?? 'Une erreur est survenue. Réessayez.'
+    return map[code] ?? `Erreur: ${code || 'inconnue'}`
   }
 
   useEffect(() => {
