@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Edit3, RefreshCw, Phone, Calendar, Clock, DollarSign, FileText } from 'lucide-react'
-import { getClient, saveClient } from '../storage/clientStorage'
+import { ArrowLeft, Edit3, RefreshCw, Phone, Calendar, Clock, DollarSign, FileText, Trash2 } from 'lucide-react'
+import { getClient, saveClient, deleteClient } from '../storage/clientStorage'
 import type { Client } from '../types/client'
 import { getStatus, statusLabel, statusColor, getDaysUntilExpiry } from '../types/client'
 
@@ -18,6 +18,7 @@ export default function ClientDetail() {
   const [client, setClient] = useState<Client | null>(null)
   const [showRenew, setShowRenew] = useState(false)
   const [renewDays, setRenewDays] = useState('30')
+  const [showDelete, setShowDelete] = useState(false)
 
   useEffect(() => { if (id) setClient(getClient(id) || null) }, [id])
 
@@ -65,6 +66,9 @@ export default function ClientDetail() {
         <p className="flex-1 text-base font-bold text-slate-900 truncate">{client.name}</p>
         <button onClick={() => navigate(`/client/${id}/edit`)} className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center press flex-shrink-0">
           <Edit3 className="w-4 h-4 text-slate-700" />
+        </button>
+        <button onClick={() => setShowDelete(true)} className="w-11 h-11 rounded-full bg-red-50 flex items-center justify-center press flex-shrink-0">
+          <Trash2 className="w-4 h-4 text-red-500" />
         </button>
       </div>
 
@@ -115,8 +119,12 @@ export default function ClientDetail() {
           {client.notes && <DetailRow icon={FileText} label="Notes" value={client.notes} last />}
         </div>
 
-        {/* Renew button */}
-        <div className="mx-4 mt-3">
+        {/* Renew + Delete buttons */}
+        <div className="mx-4 mt-3 flex gap-3">
+          <button onClick={() => setShowDelete(true)}
+            className="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center press flex-shrink-0">
+            <Trash2 className="w-5 h-5 text-red-500" />
+          </button>
           <button onClick={() => setShowRenew(true)}
             className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 press shadow-lg shadow-blue-100 active:bg-blue-700">
             <RefreshCw className="w-4 h-4" />
@@ -124,6 +132,33 @@ export default function ClientDetail() {
           </button>
         </div>
       </div>
+
+      {/* Delete sheet */}
+      {showDelete && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowDelete(false)} />
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+            <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
+            <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <Trash2 className="w-7 h-7 text-red-500" />
+            </div>
+            <p className="text-base font-bold text-slate-900 text-center mb-1">Supprimer le client</p>
+            <p className="text-sm text-slate-500 text-center mb-6">
+              <span className="font-semibold text-slate-700">{client.name}</span> et son abonnement seront définitivement supprimés.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowDelete(false)}
+                className="flex-1 py-3.5 rounded-2xl bg-[#EDE9E3] text-slate-700 font-semibold text-sm press">
+                Annuler
+              </button>
+              <button onClick={() => { deleteClient(client.id); navigate('/') }}
+                className="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-bold text-sm press">
+                Supprimer
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Renew sheet */}
       {showRenew && (
