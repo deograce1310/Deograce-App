@@ -37,7 +37,7 @@ export default function ClientList() {
 
   return (
     <div className="flex flex-col h-full bg-slate-50">
-      {/* Header */}
+      {/* ── Header ── */}
       <div className="bg-white safe-top px-5 pt-4 pb-3 border-b border-slate-100">
         <div className="flex items-center justify-between mb-3">
           <img src="/logo.png" alt="Deograce" className="h-11 object-contain" />
@@ -74,7 +74,7 @@ export default function ClientList() {
       </div>
 
       <div className="flex-1 overflow-y-auto pb-28">
-        {/* Stats row */}
+        {/* ── Stats row ── */}
         {!search && (
           <div className="px-4 pt-4 pb-2">
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -87,7 +87,7 @@ export default function ClientList() {
           </div>
         )}
 
-        {/* Alert banner */}
+        {/* ── Alert banner ── */}
         {!search && totalSoon > 0 && (
           <div className="mx-4 mt-3 bg-orange-50 border border-orange-100 rounded-2xl px-4 py-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
@@ -99,7 +99,7 @@ export default function ClientList() {
           </div>
         )}
 
-        {/* Empty state */}
+        {/* ── Empty state ── */}
         {all.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 px-8 animate-fade-in-up">
             <div className="w-20 h-20 rounded-3xl bg-blue-50 flex items-center justify-center mb-5">
@@ -124,7 +124,7 @@ export default function ClientList() {
           </div>
         )}
 
-        {/* Urgent section */}
+        {/* ── Urgent section ── */}
         {urgent.length > 0 && (
           <Section label="À renouveler" count={urgent.length} color="#EA580C">
             {urgent.map((c, i) => (
@@ -135,7 +135,7 @@ export default function ClientList() {
           </Section>
         )}
 
-        {/* Active section */}
+        {/* ── Active section ── */}
         {active.length > 0 && (
           <Section label="Actifs" count={active.length} color="#16A34A">
             {active.map((c, i) => (
@@ -146,7 +146,7 @@ export default function ClientList() {
           </Section>
         )}
 
-        {/* Inactive section */}
+        {/* ── Inactive section ── */}
         {inactive.length > 0 && (
           <Section label="Inactifs" count={inactive.length} color="#94A3B8">
             {inactive.map((c, i) => (
@@ -158,7 +158,7 @@ export default function ClientList() {
         )}
       </div>
 
-      {/* Delete sheet */}
+      {/* ── Delete sheet ── */}
       {deleteConfirm && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setDeleteConfirm(null)} />
@@ -235,32 +235,25 @@ function ClientRow({ client, index, onClick, onDelete }: {
 
   return (
     <button
-      className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-slate-50 transition-colors animate-fade-in-up"
+      className={`w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-slate-50 transition-colors animate-fade-in-up`}
       style={{ animationDelay: `${index * 0.05}s` }}
       onClick={onClick}
     >
       {/* Avatar */}
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-base"
-        style={{ backgroundColor: avatarBg, color: avatarFg }}
-      >
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-base"
+        style={{ backgroundColor: avatarBg, color: avatarFg }}>
         {initial}
       </div>
 
       {/* Text */}
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-slate-900 text-sm truncate">{client.name}</p>
-        <p className="text-xs text-slate-400 truncate mt-0.5">
-          {client.subscriptionType}{client.phoneNumber ? ` · ${client.phoneNumber}` : ''}
-        </p>
+        <p className="text-xs text-slate-400 truncate mt-0.5">{client.subscriptionType}{client.phoneNumber ? ` · ${client.phoneNumber}` : ''}</p>
       </div>
 
       {/* Days badge */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
-        <span
-          className="text-xs font-bold px-2 py-1 rounded-lg"
-          style={{ color, backgroundColor: color + '18' }}
-        >
+        <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ color, backgroundColor: color + '18' }}>
           {dayLabel}
         </span>
         <ChevronRight className="w-4 h-4 text-slate-300" />

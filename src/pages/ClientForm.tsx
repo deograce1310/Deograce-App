@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Check } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { getClient, saveClient, generateId } from '../storage/clientStorage'
 import type { Client } from '../types/client'
 
 interface FormState {
-  name: string
-  phoneNumber: string
-  subscriptionType: string
-  startDate: string
-  durationDays: string
-  expirationDate: string
-  price: string
-  notes: string
+  name: string; phoneNumber: string; subscriptionType: string
+  startDate: string; durationDays: string; expirationDate: string
+  price: string; notes: string
 }
 
 function addDays(date: string, days: number): string {
@@ -21,18 +16,16 @@ function addDays(date: string, days: number): string {
   return d.toISOString().split('T')[0]
 }
 
-function today(): string {
-  return new Date().toISOString().split('T')[0]
-}
+const today = () => new Date().toISOString().split('T')[0]
 
-const QUICK_DURATIONS = [
+const DURATION_PRESETS = [
   { label: '1 mois', days: 30 },
   { label: '3 mois', days: 90 },
   { label: '6 mois', days: 180 },
   { label: '1 an', days: 365 },
 ]
 
-const POPULAR_SUBS = ['Apple Music', 'Netflix', 'Spotify', 'Disney+', 'YouTube Premium', 'Prime Video']
+const SUB_SUGGESTIONS = ['Apple Music', 'Netflix', 'Spotify', 'Disney+', 'YouTube Premium', 'Prime Video', 'Canal+', 'Deezer']
 
 export default function ClientForm() {
   const navigate = useNavigate()
@@ -45,196 +38,167 @@ export default function ClientForm() {
     expirationDate: addDays(today(), 30), price: '', notes: ''
   })
   const [error, setError] = useState('')
-  const [showSubSuggestions, setShowSubSuggestions] = useState(false)
 
   useEffect(() => {
     if (id) {
-      const client = getClient(id)
-      if (client) {
-        setForm({
-          name: client.name, phoneNumber: client.phoneNumber,
-          subscriptionType: client.subscriptionType, startDate: client.startDate,
-          durationDays: String(client.durationDays), expirationDate: client.expirationDate,
-          price: client.price ? String(client.price) : '', notes: client.notes
-        })
-      }
+      const c = getClient(id)
+      if (c) setForm({
+        name: c.name, phoneNumber: c.phoneNumber, subscriptionType: c.subscriptionType,
+        startDate: c.startDate, durationDays: String(c.durationDays),
+        expirationDate: c.expirationDate, price: c.price ? String(c.price) : '', notes: c.notes
+      })
     }
   }, [id])
 
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = e.target.value
-    setForm(prev => {
-      const next = { ...prev, [field]: value }
+    const v = e.target.value
+    setForm(p => {
+      const n = { ...p, [field]: v }
       if (field === 'startDate' || field === 'durationDays') {
-        const dur = parseInt(field === 'durationDays' ? value : prev.durationDays) || 0
-        const base = field === 'startDate' ? value : prev.startDate
-        next.expirationDate = addDays(base, dur)
+        const dur = parseInt(field === 'durationDays' ? v : p.durationDays) || 0
+        n.expirationDate = addDays(field === 'startDate' ? v : p.startDate, dur)
       }
-      return next
+      return n
     })
   }
 
-  const setDuration = (days: number) => {
-    setForm(prev => ({
-      ...prev,
-      durationDays: String(days),
-      expirationDate: addDays(prev.startDate, days)
-    }))
-  }
+  const setDur = (days: number) => setForm(p => ({
+    ...p, durationDays: String(days), expirationDate: addDays(p.startDate, days)
+  }))
 
   const handleSave = () => {
     if (!form.name.trim()) { setError('Le nom est obligatoire'); return }
     if (!form.subscriptionType.trim()) { setError("Le type d'abonnement est obligatoire"); return }
-    const client: Client = {
-      id: id || generateId(), name: form.name.trim(),
-      phoneNumber: form.phoneNumber.trim(), subscriptionType: form.subscriptionType.trim(),
-      startDate: form.startDate, durationDays: parseInt(form.durationDays) || 30,
-      expirationDate: form.expirationDate, price: parseFloat(form.price) || 0,
-      notes: form.notes.trim(), isActive: true, createdAt: new Date().toISOString()
-    }
-    saveClient(client)
+    saveClient({
+      id: id || generateId(), name: form.name.trim(), phoneNumber: form.phoneNumber.trim(),
+      subscriptionType: form.subscriptionType.trim(), startDate: form.startDate,
+      durationDays: parseInt(form.durationDays) || 30, expirationDate: form.expirationDate,
+      price: parseFloat(form.price) || 0, notes: form.notes.trim(),
+      isActive: true, createdAt: new Date().toISOString()
+    } as Client)
     navigate(-1)
   }
 
+  const filteredSuggestions = SUB_SUGGESTIONS.filter(s =>
+    form.subscriptionType.length > 0 &&
+    s.toLowerCase().includes(form.subscriptionType.toLowerCase()) &&
+    s.toLowerCase() !== form.subscriptionType.toLowerCase()
+  )
+
   return (
-    <div className="flex flex-col h-full bg-gray-50">
-      {/* Header blanc */}
-      <div className="bg-white safe-top px-5 pt-4 pb-4 shadow-sm border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center press">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
-          </button>
-          <img src="/logo.png" alt="Deograce" className="w-10 h-10 object-contain" />
-          <div>
-            <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">{isEdit ? 'Modification' : 'Nouveau client'}</p>
-            <h1 className="text-gray-900 text-lg font-extrabold leading-tight">{isEdit ? 'Modifier le client' : 'Ajouter un client'}</h1>
-          </div>
+    <div className="flex flex-col h-full bg-slate-50">
+      {/* Header */}
+      <div className="bg-white safe-top px-4 pt-4 pb-4 border-b border-slate-100 flex items-center gap-3">
+        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center press flex-shrink-0">
+          <ArrowLeft className="w-4 h-4 text-slate-700" />
+        </button>
+        <div className="flex-1">
+          <p className="text-xs text-slate-400 font-medium">{isEdit ? 'Modifier' : 'Nouveau'}</p>
+          <p className="text-base font-bold text-slate-900 leading-tight">
+            {isEdit ? 'Modifier le client' : 'Ajouter un client'}
+          </p>
         </div>
+        <img src="/logo.png" alt="" className="h-9 object-contain opacity-60" />
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28 space-y-4 animate-fade-in-up">
-        {/* Client info card */}
-        <FormCard title="👤 Informations client">
-          <FormInput label="Nom complet *" type="text" value={form.name} onChange={set('name')} placeholder="Ex: Jean Dupont" />
-          <FormInput label="Téléphone" type="tel" value={form.phoneNumber} onChange={set('phoneNumber')} placeholder="+33 6 12 34 56 78" />
-        </FormCard>
+      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-32 space-y-5 animate-fade-in-up">
+        {/* Client */}
+        <FieldGroup label="Client">
+          <Field label="Nom complet" required value={form.name} onChange={set('name')} placeholder="Jean Dupont" />
+          <Divider />
+          <Field label="Téléphone" type="tel" value={form.phoneNumber} onChange={set('phoneNumber')} placeholder="+33 6 12 34 56 78" />
+        </FieldGroup>
 
-        {/* Subscription card */}
-        <FormCard title="📱 Abonnement">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Type d'abonnement *</label>
-            <input
-              type="text"
-              value={form.subscriptionType}
-              onChange={e => { set('subscriptionType')(e); setShowSubSuggestions(true) }}
-              onFocus={() => setShowSubSuggestions(true)}
-              placeholder="Ex: Apple Music, Netflix..."
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:bg-white transition-all"
-            />
-            {showSubSuggestions && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {POPULAR_SUBS.filter(s => s.toLowerCase().includes(form.subscriptionType.toLowerCase()) && s !== form.subscriptionType).slice(0, 4).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => { setForm(p => ({ ...p, subscriptionType: s })); setShowSubSuggestions(false) }}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-medium rounded-lg border border-blue-100 press"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <FormInput label="Prix mensuel (€)" type="number" value={form.price} onChange={set('price')} placeholder="Ex: 5.99" />
-        </FormCard>
-
-        {/* Dates card */}
-        <FormCard title="📅 Durée & Dates">
-          <FormInput label="Date de début" type="date" value={form.startDate} onChange={set('startDate')} />
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Durée rapide</label>
-            <div className="grid grid-cols-4 gap-2">
-              {QUICK_DURATIONS.map(({ label, days }) => (
-                <button
-                  key={days}
-                  onClick={() => setDuration(days)}
-                  className={`py-2 rounded-xl text-xs font-semibold border transition-all press ${
-                    parseInt(form.durationDays) === days
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
-                      : 'bg-gray-50 text-gray-600 border-gray-200'
-                  }`}
-                >
-                  {label}
+        {/* Abonnement */}
+        <FieldGroup label="Abonnement">
+          <Field label="Type d'abonnement" required value={form.subscriptionType} onChange={set('subscriptionType')} placeholder="Apple Music, Netflix..." />
+          {filteredSuggestions.length > 0 && (
+            <div className="px-4 pb-3 flex flex-wrap gap-2">
+              {filteredSuggestions.slice(0, 4).map(s => (
+                <button key={s} onClick={() => setForm(p => ({ ...p, subscriptionType: s }))}
+                  className="text-xs px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg font-medium border border-blue-100 press">
+                  {s}
                 </button>
               ))}
             </div>
-          </div>
+          )}
+          <Divider />
+          <Field label="Prix mensuel (€)" type="number" value={form.price} onChange={set('price')} placeholder="5.99" />
+        </FieldGroup>
 
-          <FormInput label="Durée personnalisée (jours)" type="number" value={form.durationDays} onChange={set('durationDays')} placeholder="30" />
-          <FormInput label="Date d'expiration" type="date" value={form.expirationDate} onChange={set('expirationDate')} />
-        </FormCard>
+        {/* Durée */}
+        <FieldGroup label="Durée">
+          <div className="px-4 py-3 grid grid-cols-4 gap-2">
+            {DURATION_PRESETS.map(({ label, days }) => (
+              <button key={days} onClick={() => setDur(days)}
+                className={`py-2.5 rounded-xl text-xs font-bold transition-all press ${
+                  parseInt(form.durationDays) === days
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                    : 'bg-slate-100 text-slate-600'
+                }`}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <Divider />
+          <Field label="Jours personnalisés" type="number" value={form.durationDays} onChange={set('durationDays')} placeholder="30" />
+          <Divider />
+          <Field label="Date de début" type="date" value={form.startDate} onChange={set('startDate')} />
+          <Divider />
+          <Field label="Date d'expiration" type="date" value={form.expirationDate} onChange={set('expirationDate')} />
+        </FieldGroup>
 
         {/* Notes */}
-        <FormCard title="📝 Notes">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Notes (optionnel)</label>
-            <textarea
-              value={form.notes}
-              onChange={set('notes')}
-              rows={3}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:bg-white transition-all resize-none"
-              placeholder="Informations supplémentaires..."
-            />
+        <FieldGroup label="Notes">
+          <div className="px-4 py-3">
+            <textarea value={form.notes} onChange={set('notes')} rows={3} placeholder="Informations supplémentaires..."
+              className="w-full bg-transparent text-sm text-slate-800 placeholder-slate-300 outline-none resize-none" />
           </div>
-        </FormCard>
+        </FieldGroup>
 
         {error && (
-          <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-xl">
-            <span>⚠️</span> {error}
+          <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600 font-medium">
+            {error}
           </div>
         )}
       </div>
 
-      {/* Save button */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-6 pt-3 bg-gray-50/90 backdrop-blur-sm border-t border-gray-100">
-        <button
-          onClick={handleSave}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 press shadow-xl shadow-blue-200"
-        >
-          <Check className="w-5 h-5" />
-          Enregistrer le client
+      {/* Save */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 px-4 py-4 safe-bottom">
+        <button onClick={handleSave}
+          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 active:bg-blue-700">
+          {isEdit ? 'Enregistrer les modifications' : 'Ajouter le client'}
         </button>
       </div>
     </div>
   )
 }
 
-function FormCard({ title, children }: { title: string; children: React.ReactNode }) {
+function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="px-4 pt-4 pb-1">
-        <p className="text-sm font-bold text-gray-800">{title}</p>
+    <div>
+      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1 mb-2">{label}</p>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        {children}
       </div>
-      <div className="px-4 pb-4 pt-2 space-y-3">{children}</div>
     </div>
   )
 }
 
-function FormInput({ label, type, value, onChange, placeholder }: {
-  label: string; type: string; value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; placeholder?: string
+function Divider() {
+  return <div className="h-px bg-slate-50 mx-4" />
+}
+
+function Field({ label, type = 'text', value, onChange, placeholder, required }: {
+  label: string; type?: string; value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  placeholder?: string; required?: boolean
 }) {
   return (
-    <div>
-      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:bg-white transition-all"
-      />
+    <div className="flex items-center px-4 py-3 gap-3">
+      <p className="text-sm text-slate-500 w-36 flex-shrink-0">{label}{required && <span className="text-blue-500 ml-0.5">*</span>}</p>
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder}
+        className="flex-1 text-sm font-medium text-slate-900 text-right bg-transparent outline-none placeholder-slate-300" />
     </div>
   )
 }
