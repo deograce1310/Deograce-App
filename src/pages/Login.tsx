@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
 } from 'firebase/auth'
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { auth, googleProvider } from '../firebase'
@@ -25,11 +26,17 @@ export default function Login() {
       'auth/invalid-email':            'Adresse email invalide.',
       'auth/user-not-found':           'Email ou mot de passe incorrect.',
       'auth/wrong-password':           'Email ou mot de passe incorrect.',
-      'auth/popup-closed-by-user':     'Connexion annulée.',
       'auth/network-request-failed':   'Erreur réseau. Vérifiez votre connexion.',
     }
     return map[code] ?? 'Une erreur est survenue. Réessayez.'
   }
+
+  useEffect(() => {
+    getRedirectResult(auth).catch((e: unknown) => {
+      const code = (e as { code?: string }).code ?? ''
+      if (code) setError(friendlyError(code))
+    })
+  }, [])
 
   const handleEmail = async () => {
     if (!email.trim() || !password) { setError('Remplissez tous les champs.'); return }
@@ -48,16 +55,14 @@ export default function Login() {
     }
   }
 
-  const handleGoogle = async () => {
-    setLoading(true); clearError()
-    try {
-      await signInWithPopup(auth, googleProvider)
-    } catch (e: unknown) {
+  const handleGoogle = () => {
+    setLoading(true)
+    clearError()
+    signInWithRedirect(auth, googleProvider).catch((e: unknown) => {
       const code = (e as { code?: string }).code ?? ''
-      if (code !== 'auth/popup-closed-by-user') setError(friendlyError(code))
-    } finally {
+      setError(friendlyError(code))
       setLoading(false)
-    }
+    })
   }
 
   return (
