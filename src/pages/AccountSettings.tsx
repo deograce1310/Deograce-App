@@ -46,12 +46,15 @@ export default function AccountSettings() {
 
   // ── Helpers ──
   const friendlyErr = (code: string) => ({
-    'auth/requires-recent-login': 'Reconnectez-vous pour effectuer cette modification.',
-    'auth/email-already-in-use':  'Cet email est déjà utilisé.',
-    'auth/invalid-email':         'Adresse email invalide.',
-    'auth/wrong-password':        'Mot de passe incorrect.',
-    'auth/weak-password':         'Minimum 6 caractères.',
-    'auth/too-many-requests':     'Trop de tentatives, réessayez plus tard.',
+    'auth/requires-recent-login':  'Reconnectez-vous pour effectuer cette modification.',
+    'auth/email-already-in-use':   'Cet email est déjà utilisé.',
+    'auth/invalid-email':          'Adresse email invalide.',
+    'auth/wrong-password':         'Mot de passe incorrect.',
+    'auth/weak-password':          'Minimum 6 caractères.',
+    'auth/too-many-requests':      'Trop de tentatives, réessayez plus tard.',
+    'storage/unauthorized':        'Permission refusée. Vérifiez les règles Firebase Storage.',
+    'storage/retry-limit-exceeded':"Erreur réseau lors de l'upload. Réessayez.",
+    'timeout':                     "L'upload a pris trop de temps. Vérifiez votre connexion.",
   } as Record<string, string>)[code] ?? `Erreur (${code})`
 
   const withReauth = (action: () => Promise<void>) => {
@@ -100,9 +103,12 @@ export default function AccountSettings() {
       const updates: { displayName?: string; photoURL?: string } = {}
       if (name.trim() !== (user.displayName ?? '')) updates.displayName = name.trim()
       if (photoURL) {
-        // Upload base64 to Firebase Storage, get HTTPS URL for updateProfile
         const avatarRef = ref(storage, `avatars/${user.uid}.jpg`)
-        await uploadString(avatarRef, photoURL, 'data_url')
+        // 15s timeout to avoid infinite spinner if Storage rules block the upload
+        await Promise.race([
+          uploadString(avatarRef, photoURL, 'data_url'),
+          new Promise<never>((_, reject) => setTimeout(() => reject({ code: 'timeout' }), 15000)),
+        ])
         updates.photoURL = await getDownloadURL(avatarRef)
       }
       if (Object.keys(updates).length) {
