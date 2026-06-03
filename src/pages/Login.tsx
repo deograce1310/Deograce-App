@@ -3,7 +3,6 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithCredential,
-  sendEmailVerification,
   sendPasswordResetEmail,
   GoogleAuthProvider,
 } from 'firebase/auth'
@@ -76,9 +75,7 @@ export default function Login() {
       if (tab === 'login') {
         await signInWithEmailAndPassword(auth, email.trim(), password)
       } else {
-        const { user } = await createUserWithEmailAndPassword(auth, email.trim(), password)
-        await sendEmailVerification(user)
-        // App.tsx will redirect to VerifyEmail screen automatically
+        await createUserWithEmailAndPassword(auth, email.trim(), password)
       }
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? ''

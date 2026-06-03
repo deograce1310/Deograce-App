@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   confirmPasswordReset,
-  applyActionCode,
   verifyPasswordResetCode,
 } from 'firebase/auth'
-import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, MailCheck } from 'lucide-react'
+import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react'
 import { auth } from '../firebase'
 
 export default function AuthAction() {
@@ -15,7 +14,6 @@ export default function AuthAction() {
   const oobCode = params.get('oobCode') ?? ''
 
   if (mode === 'resetPassword') return <ResetPassword oobCode={oobCode} onDone={() => navigate('/', { replace: true })} />
-  if (mode === 'verifyEmail')   return <VerifyEmailAction oobCode={oobCode} onDone={() => navigate('/', { replace: true })} />
 
   return (
     <div className="flex items-center justify-center h-full bg-[#F5F2ED] px-6">
@@ -23,8 +21,6 @@ export default function AuthAction() {
     </div>
   )
 }
-
-/* ─── Reset password ──────────────────────────────────────────────────── */
 
 function ResetPassword({ oobCode, onDone }: { oobCode: string; onDone: () => void }) {
   const [email, setEmail]       = useState('')
@@ -35,7 +31,6 @@ function ResetPassword({ oobCode, onDone }: { oobCode: string; onDone: () => voi
   const [done, setDone]         = useState(false)
   const [error, setError]       = useState('')
 
-  // Verify the code and get the associated email
   useEffect(() => {
     if (!oobCode) { setError('Code manquant.'); return }
     verifyPasswordResetCode(auth, oobCode)
@@ -125,49 +120,6 @@ function ResetPassword({ oobCode, onDone }: { oobCode: string; onDone: () => voi
           </>
         )}
       </div>
-    </div>
-  )
-}
-
-/* ─── Email verification ────────────────────────────────────────────────── */
-
-function VerifyEmailAction({ oobCode, onDone }: { oobCode: string; onDone: () => void }) {
-  const [status, setStatus] = useState<'loading' | 'done' | 'error'>('loading')
-
-  useEffect(() => {
-    if (!oobCode) { setStatus('error'); return }
-    applyActionCode(auth, oobCode)
-      .then(async () => {
-        await auth.currentUser?.reload()
-        setStatus('done')
-        setTimeout(onDone, 2000)
-      })
-      .catch(() => setStatus('error'))
-  }, [oobCode, onDone])
-
-  return (
-    <div className="flex flex-col items-center justify-center h-full bg-[#F5F2ED] px-6 gap-6">
-      {status === 'loading' && (
-        <span className="w-8 h-8 border-[3px] border-blue-600 border-t-transparent rounded-full animate-spin" />
-      )}
-      {status === 'done' && (
-        <>
-          <div className="w-16 h-16 rounded-3xl bg-green-50 flex items-center justify-center">
-            <MailCheck className="w-8 h-8 text-green-500" />
-          </div>
-          <p className="text-xl font-black text-slate-900">Email vérifié !</p>
-          <p className="text-sm text-slate-500">Redirection en cours…</p>
-        </>
-      )}
-      {status === 'error' && (
-        <>
-          <div className="w-16 h-16 rounded-3xl bg-red-50 flex items-center justify-center">
-            <AlertCircle className="w-8 h-8 text-red-400" />
-          </div>
-          <p className="text-xl font-black text-slate-900">Lien invalide</p>
-          <p className="text-sm text-slate-500 text-center">Ce lien a déjà été utilisé ou est expiré.</p>
-        </>
-      )}
     </div>
   )
 }

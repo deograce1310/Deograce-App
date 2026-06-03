@@ -4,7 +4,6 @@ import ClientForm from './pages/ClientForm'
 import ClientDetail from './pages/ClientDetail'
 import AccountSettings from './pages/AccountSettings'
 import Login from './pages/Login'
-import VerifyEmail from './pages/VerifyEmail'
 import AuthAction from './pages/AuthAction'
 import { useAuth } from './contexts/AuthContext'
 
@@ -23,20 +22,17 @@ export default function App() {
 
   return (
     <Routes>
-      {/* Always accessible — handles password reset & email verification links */}
       <Route path="/auth/action" element={<AuthAction />} />
 
       {!user
         ? <Route path="*" element={<Login />} />
-        : !user.emailVerified
-        ? <Route path="*" element={<VerifyEmail />} />
         : <>
-            <Route path="/"                  element={<ClientList />} />
-            <Route path="/client/new"        element={<ClientForm />} />
-            <Route path="/client/:id/edit"   element={<ClientForm />} />
-            <Route path="/client/:id"        element={<ClientDetail />} />
-            <Route path="/account"           element={<AccountSettings />} />
-            <Route path="*"                  element={<Navigate to="/" replace />} />
+            <Route path="/"                element={<ClientList />} />
+            <Route path="/client/new"      element={<ClientForm />} />
+            <Route path="/client/:id/edit" element={<ClientForm />} />
+            <Route path="/client/:id"      element={<ClientDetail />} />
+            <Route path="/account"         element={<AccountSettings />} />
+            <Route path="*"                element={<Navigate to="/" replace />} />
           </>
       }
     </Routes>
