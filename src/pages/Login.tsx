@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -8,6 +8,37 @@ import {
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { auth } from '../firebase'
 
+type GIS = {
+  accounts: {
+    oauth2: {
+      initTokenClient: (cfg: {
+        client_id: string
+        scope: string
+        callback: (r: { access_token?: string; error?: string }) => void
+        error_callback?: (e: { type: string }) => void
+      }) => { requestAccessToken: () => void }
+    }
+  }
+}
+
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string
+
+function loadGIS(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if ((window as unknown as { google?: GIS }).google?.accounts?.oauth2) {
+      resolve(); return
+    }
+    const existing = document.querySelector('script[src*="gsi/client"]')
+    if (existing) { existing.addEventListener('load', () => resolve()); return }
+    const s = document.createElement('script')
+    s.src = 'https://accounts.google.com/gsi/client'
+    s.async = true
+    s.onload  = () => resolve()
+    s.onerror = () => reject(new Error('gis-load-failed'))
+    document.head.appendChild(s)
+  })
+}
+
 export default function Login() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
   const [email, setEmail] = useState('')
@@ -15,6 +46,9 @@ export default function Login() {
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Preload GIS so requestAccessToken() fires synchronously on click
+  useEffect(() => { loadGIS().catch(() => {}) }, [])
 
   const clearError = () => setError('')
 
@@ -52,34 +86,17 @@ export default function Login() {
     setLoading(true)
     clearError()
     try {
-      const gis = (window as unknown as Record<string, unknown>).google as {
-        accounts: {
-          oauth2: {
-            initTokenClient: (cfg: {
-              client_id: string
-              scope: string
-              callback: (r: { access_token?: string; error?: string }) => void
-              error_callback?: (e: { type: string }) => void
-            }) => { requestAccessToken: () => void }
-          }
-        }
-      } | undefined
-
-      if (!gis?.accounts?.oauth2) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement('script')
-          s.src = 'https://accounts.google.com/gsi/client'
-          s.async = true
-          s.onload = () => resolve()
-          s.onerror = () => reject(new Error('gis-load-failed'))
-          document.head.appendChild(s)
-        })
+      // GIS already preloaded — if not for some reason, load it now
+      if (!(window as unknown as { google?: GIS }).google?.accounts?.oauth2) {
+        await loadGIS()
       }
 
-      const g = (window as unknown as Record<string, unknown>).google as typeof gis
+      const g = (window as unknown as { google: GIS }).google
       const accessToken = await new Promise<string>((resolve, reject) => {
-        g!.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID as string,
+        // requestAccessToken() is called synchronously from the Promise executor
+        // → popup opens before any await suspension → no browser popup block
+        g.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
           scope: 'email profile openid',
           callback: (r) => {
             if (r.error || !r.access_token) reject(new Error(r.error ?? 'no-token'))
@@ -92,11 +109,9 @@ export default function Login() {
       const credential = GoogleAuthProvider.credential(null, accessToken)
       await signInWithCredential(auth, credential)
     } catch (e: unknown) {
-      const msg = (e as { message?: string; code?: string }).message
-        ?? (e as { code?: string }).code ?? ''
-      if (msg === 'popup_closed_by_user' || msg === 'access_denied') {
-        setLoading(false)
-        return
+      const msg = (e as { message?: string }).message ?? (e as { code?: string }).code ?? ''
+      if (['popup_closed_by_user', 'access_denied', 'user_cancel', 'popup_closed'].includes(msg)) {
+        setLoading(false); return
       }
       const code = (e as { code?: string }).code ?? ''
       setError(friendlyError(code || msg))
@@ -107,9 +122,9 @@ export default function Login() {
   return (
     <div className="flex flex-col h-full bg-[#F5F2ED] safe-top">
       <div className="flex flex-col items-center pt-14 pb-8 px-6">
-        <img src="/logo.png" alt="Deograce" className="h-20 object-contain mb-6 mix-blend-multiply" />
+        <img src="/logo.png" alt="SubTrack" className="h-20 object-contain mb-6 mix-blend-multiply" />
         <p className="text-2xl font-black text-slate-900 text-center">Bienvenue</p>
-        <p className="text-sm text-slate-400 text-center mt-1">Gérez vos abonnements clients</p>
+        <p className="text-sm text-slate-400 text-center mt-1">Connectez-vous pour accéder à vos clients</p>
       </div>
 
       {/* Tab switcher */}
