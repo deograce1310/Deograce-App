@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, X, Bell, ChevronRight, LogOut } from 'lucide-react'
+import { Plus, Search, X, Bell, ChevronRight, LogOut, Settings } from 'lucide-react'
 import { subscribeToClients, deleteClient } from '../storage/clientStorage'
 import { useAuth } from '../contexts/AuthContext'
 import { requestNotificationPermission, checkAndNotify } from '../notifications/notificationService'
@@ -67,9 +67,9 @@ export default function ClientList() {
               onClick={() => setShowProfile(true)}
               className="w-11 h-11 rounded-full bg-[#EDE9E3] flex items-center justify-center active:bg-slate-200 overflow-hidden"
             >
-              {user?.photoURL?.startsWith('https://lh3.googleusercontent.com/')
+              {user?.photoURL
                 ? <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
-                : <span className="text-sm font-bold text-slate-600">{(user?.email ?? 'U')[0].toUpperCase()}</span>}
+                : <span className="text-sm font-bold text-slate-600">{(user?.displayName ?? user?.email ?? 'U')[0].toUpperCase()}</span>}
             </button>
             <button
               onClick={() => navigate('/client/new')}
@@ -184,24 +184,36 @@ export default function ClientList() {
       {showProfile && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowProfile(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 sheet-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
             <div className="flex items-center gap-4 mb-6">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0">
-                {user?.photoURL?.startsWith('https://lh3.googleusercontent.com/')
+                {user?.photoURL
                   ? <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
-                  : <span className="text-2xl font-black text-blue-500">{(user?.email ?? 'U')[0].toUpperCase()}</span>}
+                  : <span className="text-2xl font-black text-blue-500">{(user?.displayName ?? user?.email ?? 'U')[0].toUpperCase()}</span>}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-slate-900 truncate">{user?.displayName ?? 'Mon compte'}</p>
                 <p className="text-sm text-slate-400 truncate">{user?.email}</p>
               </div>
             </div>
-            <button onClick={() => { setShowProfile(false); logout() }}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-50 border border-red-100 text-red-600 font-semibold text-sm press">
-              <LogOut className="w-4 h-4" />
-              Se déconnecter
-            </button>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => { setShowProfile(false); navigate('/account') }}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#EDE9E3] text-slate-700 font-semibold text-sm press">
+                <Settings className="w-4 h-4" />
+                Modifier le profil
+              </button>
+              <button onClick={() => {
+                  setShowProfile(false)
+                  ;(window as unknown as { google?: { accounts?: { id?: { disableAutoSelect?: () => void } } } })
+                    .google?.accounts?.id?.disableAutoSelect?.()
+                  logout()
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-50 border border-red-100 text-red-600 font-semibold text-sm press">
+                <LogOut className="w-4 h-4" />
+                Se déconnecter
+              </button>
+            </div>
           </div>
         </>
       )}
@@ -210,7 +222,7 @@ export default function ClientList() {
       {deleteConfirm && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setDeleteConfirm(null)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 sheet-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
             <p className="text-base font-bold text-slate-900 text-center mb-1">Supprimer le client</p>
             <p className="text-sm text-slate-500 text-center mb-6">
