@@ -197,7 +197,13 @@ export default function ClientList() {
                 <p className="text-sm text-slate-400 truncate">{user?.email}</p>
               </div>
             </div>
-            <button onClick={() => { setShowProfile(false); logout() }}
+            <button onClick={() => {
+                setShowProfile(false)
+                // Disable GIS auto-select so next Google sign-in shows account picker
+                ;(window as unknown as { google?: { accounts?: { id?: { disableAutoSelect?: () => void } } } })
+                  .google?.accounts?.id?.disableAutoSelect?.()
+                logout()
+              }}
               className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-50 border border-red-100 text-red-600 font-semibold text-sm press">
               <LogOut className="w-4 h-4" />
               Se déconnecter
