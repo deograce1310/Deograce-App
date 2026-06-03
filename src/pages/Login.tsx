@@ -3,10 +3,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithCredential,
-  sendPasswordResetEmail,
   GoogleAuthProvider,
 } from 'firebase/auth'
-import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { auth } from '../firebase'
 
 type GIS = {
@@ -47,12 +46,11 @@ export default function Login() {
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   // Preload GIS so requestAccessToken() fires synchronously on click
   useEffect(() => { loadGIS().catch(() => {}) }, [])
 
-  const clearMessages = () => { setError(''); setSuccess('') }
+  const clearError = () => setError('')
 
   const friendlyError = (code: string) => {
     const map: Record<string, string> = {
@@ -70,7 +68,7 @@ export default function Login() {
 
   const handleEmail = async () => {
     if (!email.trim() || !password) { setError('Remplissez tous les champs.'); return }
-    setLoading(true); clearMessages()
+    setLoading(true); clearError()
     try {
       if (tab === 'login') {
         await signInWithEmailAndPassword(auth, email.trim(), password)
@@ -85,23 +83,9 @@ export default function Login() {
     }
   }
 
-  const handleForgotPassword = async () => {
-    if (!email.trim()) { setError('Entrez votre email pour recevoir le lien de réinitialisation.'); return }
-    setLoading(true); clearMessages()
-    try {
-      await sendPasswordResetEmail(auth, email.trim())
-      setSuccess(`Un lien de réinitialisation a été envoyé à ${email.trim()}`)
-    } catch (e: unknown) {
-      const code = (e as { code?: string }).code ?? ''
-      setError(friendlyError(code))
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleGoogle = async () => {
     setLoading(true)
-    clearMessages()
+    clearError()
     try {
       // GIS already preloaded — if not for some reason, load it now
       if (!(window as unknown as { google?: GIS }).google?.accounts?.oauth2) {
@@ -147,7 +131,7 @@ export default function Login() {
       {/* Tab switcher */}
       <div className="mx-6 mb-6 flex bg-[#EDE9E3] rounded-2xl p-1">
         {(['login', 'register'] as const).map(t => (
-          <button key={t} onClick={() => { setTab(t); clearMessages() }}
+          <button key={t} onClick={() => { setTab(t); clearError() }}
             className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
               tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
             }`}>
@@ -178,7 +162,7 @@ export default function Login() {
             <input
               type="email"
               value={email}
-              onChange={e => { setEmail(e.target.value); clearMessages() }}
+              onChange={e => { setEmail(e.target.value); clearError() }}
               placeholder="Email"
               autoComplete="email"
               className="flex-1 text-sm font-medium text-slate-900 bg-transparent outline-none placeholder-slate-300"
@@ -190,7 +174,7 @@ export default function Login() {
             <input
               type={showPwd ? 'text' : 'password'}
               value={password}
-              onChange={e => { setPassword(e.target.value); clearMessages() }}
+              onChange={e => { setPassword(e.target.value); clearError() }}
               placeholder="Mot de passe"
               autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
               onKeyDown={e => e.key === 'Enter' && handleEmail()}
@@ -202,25 +186,10 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Forgot password — login tab only */}
-        {tab === 'login' && (
-          <button onClick={handleForgotPassword} disabled={loading}
-            className="text-sm text-blue-600 font-medium text-right -mt-1 press disabled:opacity-50">
-            Mot de passe oublié ?
-          </button>
-        )}
-
         {error && (
           <div className="flex items-start gap-2.5 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
             <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-red-600 font-medium">{error}</p>
-          </div>
-        )}
-
-        {success && (
-          <div className="flex items-start gap-2.5 bg-green-50 border border-green-100 rounded-xl px-4 py-3">
-            <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-green-700 font-medium">{success}</p>
           </div>
         )}
 
