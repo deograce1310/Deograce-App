@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
 } from 'firebase/auth'
@@ -55,19 +56,24 @@ export default function Login() {
     }
   }
 
-  const handleGoogle = () => {
+  const handleGoogle = async () => {
     setLoading(true)
     clearError()
-    const timeout = setTimeout(() => {
-      setLoading(false)
-      setError('Connexion impossible. Vérifiez votre connexion et réessayez.')
-    }, 10000)
-    signInWithRedirect(auth, googleProvider).catch((e: unknown) => {
-      clearTimeout(timeout)
+    try {
+      await signInWithPopup(auth, googleProvider)
+    } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? ''
-      setError(friendlyError(code))
-      setLoading(false)
-    })
+      if (code === 'auth/popup-blocked') {
+        signInWithRedirect(auth, googleProvider).catch((e2: unknown) => {
+          const code2 = (e2 as { code?: string }).code ?? ''
+          setError(friendlyError(code2))
+          setLoading(false)
+        })
+      } else {
+        if (code !== 'auth/popup-closed-by-user') setError(friendlyError(code))
+        setLoading(false)
+      }
+    }
   }
 
   return (
