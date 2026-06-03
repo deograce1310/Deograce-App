@@ -158,7 +158,7 @@ export default function ClientDetail() {
       {showDelete && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowDelete(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
             <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
               <Trash2 className="w-7 h-7 text-red-500" />
@@ -185,7 +185,7 @@ export default function ClientDetail() {
       {showRenew && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowRenew(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
             <p className="text-base font-bold text-slate-900 mb-1">Renouveler l'abonnement</p>
             <p className="text-sm text-slate-400 mb-4">{client.name} — {client.subscriptionType}</p>

@@ -209,7 +209,7 @@ export default function ClientForm() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] border-t border-[#EDE9E3] px-4 py-4 safe-bottom">
+      <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] border-t border-[#EDE9E3] px-4 py-4 safe-bottom">
         <button onClick={handleSave}
           className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 active:bg-blue-700">
           {isEdit ? 'Enregistrer les modifications' : 'Ajouter le client'}
@@ -219,7 +219,7 @@ export default function ClientForm() {
       {showDurPicker && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowDurPicker(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
             <p className="text-base font-bold text-slate-900 mb-4">Choisir la durée</p>
             <div className="overflow-y-auto max-h-72 -mx-2 px-2 space-y-1">
@@ -246,7 +246,7 @@ export default function ClientForm() {
       {showSubPicker && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowSubPicker(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
             <p className="text-base font-bold text-slate-900 mb-4">Type d'abonnement</p>
             <div className="flex items-center bg-[#EDE9E3] rounded-xl px-3 py-2.5 mb-4 gap-2">
