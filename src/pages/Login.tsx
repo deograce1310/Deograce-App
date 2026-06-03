@@ -63,7 +63,7 @@ export default function Login() {
       await signInWithPopup(auth, googleProvider)
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? ''
-      if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user') {
+      if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/internal-error') {
         try {
           await signInWithRedirect(auth, googleProvider)
         } catch (e2: unknown) {
