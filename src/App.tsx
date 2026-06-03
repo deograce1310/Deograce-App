@@ -4,6 +4,7 @@ import ClientForm from './pages/ClientForm'
 import ClientDetail from './pages/ClientDetail'
 import AccountSettings from './pages/AccountSettings'
 import Login from './pages/Login'
+import VerifyEmail from './pages/VerifyEmail'
 import { useAuth } from './contexts/AuthContext'
 
 function Spinner() {
@@ -19,6 +20,7 @@ export default function App() {
 
   if (loading) return <Spinner />
   if (!user) return <Login />
+  if (!user.emailVerified) return <VerifyEmail />
 
   return (
     <div className="h-full bg-[#F5F2ED]">
