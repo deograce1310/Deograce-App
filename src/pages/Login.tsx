@@ -60,12 +60,21 @@ export default function Login() {
     setLoading(true)
     clearError()
     try {
-      await getRedirectResult(auth).catch(() => {})
-      await signInWithRedirect(auth, googleProvider)
+      await signInWithPopup(auth, googleProvider)
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? ''
-      setError(friendlyError(code))
-      setLoading(false)
+      if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user') {
+        try {
+          await signInWithRedirect(auth, googleProvider)
+        } catch (e2: unknown) {
+          const code2 = (e2 as { code?: string }).code ?? ''
+          setError(friendlyError(code2))
+          setLoading(false)
+        }
+      } else {
+        if (code) setError(friendlyError(code))
+        setLoading(false)
+      }
     }
   }
 
