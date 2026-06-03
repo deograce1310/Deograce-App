@@ -59,11 +59,16 @@ export default function Login() {
   const handleGoogle = async () => {
     setLoading(true)
     clearError()
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
     try {
-      await signInWithPopup(auth, googleProvider)
+      if (isMobile) {
+        await signInWithRedirect(auth, googleProvider)
+      } else {
+        await signInWithPopup(auth, googleProvider)
+      }
     } catch (e: unknown) {
       const code = (e as { code?: string }).code ?? ''
-      if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/internal-error') {
+      if (!isMobile && (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user')) {
         try {
           await signInWithRedirect(auth, googleProvider)
         } catch (e2: unknown) {
