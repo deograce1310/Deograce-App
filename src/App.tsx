@@ -5,6 +5,7 @@ import ClientDetail from './pages/ClientDetail'
 import AccountSettings from './pages/AccountSettings'
 import Login from './pages/Login'
 import VerifyEmail from './pages/VerifyEmail'
+import AuthAction from './pages/AuthAction'
 import { useAuth } from './contexts/AuthContext'
 
 function Spinner() {
@@ -19,19 +20,25 @@ export default function App() {
   const { user, loading } = useAuth()
 
   if (loading) return <Spinner />
-  if (!user) return <Login />
-  if (!user.emailVerified) return <VerifyEmail />
 
   return (
-    <div className="h-full bg-[#F5F2ED]">
-      <Routes>
-        <Route path="/" element={<ClientList />} />
-        <Route path="/client/new" element={<ClientForm />} />
-        <Route path="/client/:id/edit" element={<ClientForm />} />
-        <Route path="/client/:id" element={<ClientDetail />} />
-        <Route path="/account" element={<AccountSettings />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </div>
+    <Routes>
+      {/* Always accessible — handles password reset & email verification links */}
+      <Route path="/auth/action" element={<AuthAction />} />
+
+      {!user
+        ? <Route path="*" element={<Login />} />
+        : !user.emailVerified
+        ? <Route path="*" element={<VerifyEmail />} />
+        : <>
+            <Route path="/"                  element={<ClientList />} />
+            <Route path="/client/new"        element={<ClientForm />} />
+            <Route path="/client/:id/edit"   element={<ClientForm />} />
+            <Route path="/client/:id"        element={<ClientDetail />} />
+            <Route path="/account"           element={<AccountSettings />} />
+            <Route path="*"                  element={<Navigate to="/" replace />} />
+          </>
+      }
+    </Routes>
   )
 }
