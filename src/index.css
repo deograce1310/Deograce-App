@@ -10,7 +10,7 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #F5F2ED; /* fond chaud crème — moins agressif que le blanc pur */
+  background: #F5F2ED;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
 }
@@ -54,17 +54,14 @@ html, body, #root {
 .card-delay-4 { animation-delay: 0.20s; }
 .card-delay-5 { animation-delay: 0.25s; }
 
-/* gradient header */
 .header-gradient {
   background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 60%, #1D4ED8 100%);
 }
 
-/* glass card */
 .glass {
   background: rgba(255,255,255,0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* active press */
 .press:active { transform: scale(0.97); transition: transform 0.1s; }
