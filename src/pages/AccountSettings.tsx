@@ -7,8 +7,10 @@ import {
   reauthenticateWithCredential,
   verifyBeforeUpdateEmail,
 } from 'firebase/auth'
+import { ref, uploadString, getDownloadURL } from 'firebase/storage'
 import { ChevronLeft, Camera, User, Mail, Lock, Eye, EyeOff, Check, AlertCircle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { storage } from '../firebase'
 
 type Status = { ok: boolean; msg: string } | null
 
@@ -97,7 +99,12 @@ export default function AccountSettings() {
     try {
       const updates: { displayName?: string; photoURL?: string } = {}
       if (name.trim() !== (user.displayName ?? '')) updates.displayName = name.trim()
-      if (photoURL) updates.photoURL = photoURL
+      if (photoURL) {
+        // Upload base64 to Firebase Storage, get HTTPS URL for updateProfile
+        const avatarRef = ref(storage, `avatars/${user.uid}.jpg`)
+        await uploadString(avatarRef, photoURL, 'data_url')
+        updates.photoURL = await getDownloadURL(avatarRef)
+      }
       if (Object.keys(updates).length) {
         await updateProfile(user, updates)
         await user.reload()
