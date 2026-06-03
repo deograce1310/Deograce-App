@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithCredential,
+  GoogleAuthProvider,
 } from 'firebase/auth'
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
-import { auth, googleProvider } from '../firebase'
+import { auth } from '../firebase'
 
 export default function Login() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
@@ -32,13 +31,6 @@ export default function Login() {
     return map[code] ?? `Erreur: ${code || 'inconnue'}`
   }
 
-  useEffect(() => {
-    getRedirectResult(auth).catch((e: unknown) => {
-      const code = (e as { code?: string }).code ?? ''
-      if (code) setError(friendlyError(code))
-    })
-  }, [])
-
   const handleEmail = async () => {
     if (!email.trim() || !password) { setError('Remplissez tous les champs.'); return }
     setLoading(true); clearError()
@@ -59,27 +51,56 @@ export default function Login() {
   const handleGoogle = async () => {
     setLoading(true)
     clearError()
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
     try {
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider)
-      } else {
-        await signInWithPopup(auth, googleProvider)
-      }
-    } catch (e: unknown) {
-      const code = (e as { code?: string }).code ?? ''
-      if (!isMobile && (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user')) {
-        try {
-          await signInWithRedirect(auth, googleProvider)
-        } catch (e2: unknown) {
-          const code2 = (e2 as { code?: string }).code ?? ''
-          setError(friendlyError(code2))
-          setLoading(false)
+      const gis = (window as unknown as Record<string, unknown>).google as {
+        accounts: {
+          oauth2: {
+            initTokenClient: (cfg: {
+              client_id: string
+              scope: string
+              callback: (r: { access_token?: string; error?: string }) => void
+              error_callback?: (e: { type: string }) => void
+            }) => { requestAccessToken: () => void }
+          }
         }
-      } else {
-        if (code) setError(friendlyError(code))
-        setLoading(false)
+      } | undefined
+
+      if (!gis?.accounts?.oauth2) {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement('script')
+          s.src = 'https://accounts.google.com/gsi/client'
+          s.async = true
+          s.onload = () => resolve()
+          s.onerror = () => reject(new Error('gis-load-failed'))
+          document.head.appendChild(s)
+        })
       }
+
+      const g = (window as unknown as Record<string, unknown>).google as typeof gis
+      const accessToken = await new Promise<string>((resolve, reject) => {
+        g!.accounts.oauth2.initTokenClient({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID as string,
+          scope: 'email profile openid',
+          callback: (r) => {
+            if (r.error || !r.access_token) reject(new Error(r.error ?? 'no-token'))
+            else resolve(r.access_token)
+          },
+          error_callback: (e) => reject(new Error(e.type)),
+        }).requestAccessToken()
+      })
+
+      const credential = GoogleAuthProvider.credential(null, accessToken)
+      await signInWithCredential(auth, credential)
+    } catch (e: unknown) {
+      const msg = (e as { message?: string; code?: string }).message
+        ?? (e as { code?: string }).code ?? ''
+      if (msg === 'popup_closed_by_user' || msg === 'access_denied') {
+        setLoading(false)
+        return
+      }
+      const code = (e as { code?: string }).code ?? ''
+      setError(friendlyError(code || msg))
+      setLoading(false)
     }
   }
 
