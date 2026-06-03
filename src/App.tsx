@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import ClientList from './pages/ClientList'
 import ClientForm from './pages/ClientForm'
 import ClientDetail from './pages/ClientDetail'
+import AccountSettings from './pages/AccountSettings'
 import Login from './pages/Login'
 import { useAuth } from './contexts/AuthContext'
 
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/client/new" element={<ClientForm />} />
         <Route path="/client/:id/edit" element={<ClientForm />} />
         <Route path="/client/:id" element={<ClientDetail />} />
+        <Route path="/account" element={<AccountSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
