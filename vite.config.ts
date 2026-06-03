@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'Deograce Abonnements',
-        short_name: 'Deograce',
+        name: 'SubTrack',
+        short_name: 'SubTrack',
         description: 'Gestionnaire d\'abonnements clients',
         theme_color: '#FDFCFA',
         background_color: '#F5F2ED',
