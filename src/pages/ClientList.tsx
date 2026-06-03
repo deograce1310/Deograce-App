@@ -184,7 +184,7 @@ export default function ClientList() {
       {showProfile && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setShowProfile(false)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 sheet-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
             <div className="flex items-center gap-4 mb-6">
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -216,7 +216,7 @@ export default function ClientList() {
       {deleteConfirm && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={() => setDeleteConfirm(null)} />
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 pb-8 safe-bottom animate-slide-up">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-[#FDFCFA] rounded-t-3xl z-50 px-6 pt-3 sheet-bottom animate-slide-up">
             <div className="w-8 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
             <p className="text-base font-bold text-slate-900 text-center mb-1">Supprimer le client</p>
             <p className="text-sm text-slate-500 text-center mb-6">
