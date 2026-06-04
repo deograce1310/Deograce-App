@@ -53,6 +53,7 @@ export default function ClientForm() {
   })
   const originalRef = useRef<{ createdAt: string; isActive: boolean } | null>(null)
   const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
   const [showDurPicker, setShowDurPicker] = useState(false)
   const [showSubPicker, setShowSubPicker] = useState(false)
   const [subSearch, setSubSearch] = useState('')
@@ -114,20 +115,32 @@ export default function ClientForm() {
     if (!form.name.trim()) { setError('Le nom est obligatoire'); return }
     if (!form.subscriptionType.trim()) { setError("Le type d'abonnement est obligatoire"); return }
     if (!user) return
-    await saveClient(user.uid, {
-      id: id || generateId(),
-      name: form.name.trim(),
-      phoneNumber: form.phoneNumber.trim(),
-      subscriptionType: form.subscriptionType.trim(),
-      startDate: form.startDate,
-      durationDays: Math.max(1, Math.min(3650, parseInt(form.durationDays) || 30)),
-      expirationDate: form.expirationDate,
-      price: Math.max(0, parseFloat(form.price) || 0),
-      notes: form.notes.trim(),
-      isActive: originalRef.current?.isActive ?? true,
-      createdAt: originalRef.current?.createdAt ?? new Date().toISOString(),
-    } as Client)
-    navigate(-1)
+    setSaving(true)
+    setError('')
+    try {
+      await saveClient(user.uid, {
+        id: id || generateId(),
+        name: form.name.trim(),
+        phoneNumber: form.phoneNumber.trim(),
+        subscriptionType: form.subscriptionType.trim(),
+        startDate: form.startDate,
+        durationDays: Math.max(1, Math.min(3650, parseInt(form.durationDays) || 30)),
+        expirationDate: form.expirationDate,
+        price: Math.max(0, parseFloat(form.price) || 0),
+        notes: form.notes.trim(),
+        isActive: originalRef.current?.isActive ?? true,
+        createdAt: originalRef.current?.createdAt ?? new Date().toISOString(),
+      } as Client)
+      navigate(-1)
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code ?? ''
+      if (code === 'permission-denied') {
+        setError('Permission refusée. Vérifiez les règles Firestore.')
+      } else {
+        setError(`Erreur lors de l'enregistrement${code ? ` (${code})` : ''}. Réessayez.`)
+      }
+      setSaving(false)
+    }
   }
 
   const currentDurLabel = DURATION_PRESETS.find(p => String(p.days) === form.durationDays)?.label
@@ -210,9 +223,11 @@ export default function ClientForm() {
       </div>
 
       <div className="fixed bottom-0 inset-x-0 max-w-[430px] mx-auto bg-[#FDFCFA] border-t border-[#EDE9E3] px-4 py-4 safe-bottom">
-        <button onClick={handleSave}
-          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 active:bg-blue-700">
-          {isEdit ? 'Enregistrer les modifications' : 'Ajouter le client'}
+        <button onClick={handleSave} disabled={saving}
+          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm press shadow-lg shadow-blue-100 active:bg-blue-700 disabled:opacity-60 flex items-center justify-center gap-2">
+          {saving
+            ? <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            : isEdit ? 'Enregistrer les modifications' : 'Ajouter le client'}
         </button>
       </div>
 
