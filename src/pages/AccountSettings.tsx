@@ -7,8 +7,9 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
 } from 'firebase/auth'
+import { ref, uploadString, getDownloadURL } from 'firebase/storage'
 import { ChevronLeft, Camera, User, Mail, Lock, Check, AlertCircle, Eye, EyeOff } from 'lucide-react'
-import { auth } from '../firebase'
+import { auth, storage } from '../firebase'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function AccountSettings() {
@@ -34,12 +35,15 @@ export default function AccountSettings() {
 
   const friendlyError = (code: string) => {
     const map: Record<string, string> = {
-      'auth/requires-recent-login':  'Reconnectez-vous pour effectuer cette modification.',
-      'auth/email-already-in-use':   'Cet email est déjà utilisé.',
-      'auth/invalid-email':          'Adresse email invalide.',
-      'auth/wrong-password':         'Mot de passe incorrect.',
-      'auth/weak-password':          'Le mot de passe doit contenir au moins 6 caractères.',
-      'auth/too-many-requests':      'Trop de tentatives. Réessayez plus tard.',
+      'auth/requires-recent-login':    'Reconnectez-vous pour effectuer cette modification.',
+      'auth/email-already-in-use':     'Cet email est déjà utilisé.',
+      'auth/invalid-email':            'Adresse email invalide.',
+      'auth/wrong-password':           'Mot de passe incorrect.',
+      'auth/weak-password':            'Le mot de passe doit contenir au moins 6 caractères.',
+      'auth/too-many-requests':        'Trop de tentatives. Réessayez plus tard.',
+      'storage/unauthorized':          'Permission refusée. Vérifiez les règles Firebase Storage.',
+      'storage/retry-limit-exceeded':  "Erreur réseau lors de l'upload. Réessayez.",
+      'timeout':                       "L'upload a pris trop de temps. Vérifiez votre connexion.",
     }
     return map[code] ?? `Erreur : ${code}`
   }
@@ -82,7 +86,14 @@ export default function AccountSettings() {
     try {
       const updates: { displayName?: string; photoURL?: string } = {}
       if (displayName.trim() !== (user.displayName ?? '')) updates.displayName = displayName.trim()
-      if (photoPreview) updates.photoURL = photoPreview
+      if (photoPreview) {
+        const avatarRef = ref(storage, `avatars/${user.uid}.jpg`)
+        await Promise.race([
+          uploadString(avatarRef, photoPreview, 'data_url'),
+          new Promise<never>((_, reject) => setTimeout(() => reject({ code: 'timeout' }), 15000)),
+        ])
+        updates.photoURL = await getDownloadURL(avatarRef)
+      }
       if (Object.keys(updates).length > 0) await updateProfile(user, updates)
       setPhotoPreview(null)
       setSuccess('Profil mis à jour.')
