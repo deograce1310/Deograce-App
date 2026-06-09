@@ -73,8 +73,14 @@ export default function ClientDetail() {
 
   const handleDelete = async () => {
     if (!user) return
-    await deleteClient(user.uid, client.id)
-    navigate('/')
+    try {
+      await deleteClient(user.uid, client.id)
+      navigate('/')
+    } catch (err) {
+      console.error('Erreur lors de la suppression :', err)
+      setShowDelete(false)
+      alert('Impossible de supprimer ce client. Veuillez réessayer.')
+    }
   }
 
   return (
