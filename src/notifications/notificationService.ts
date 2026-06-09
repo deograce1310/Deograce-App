@@ -1,3 +1,6 @@
+import { getToken } from 'firebase/messaging'
+import { doc, setDoc } from 'firebase/firestore'
+import { db, messagingPromise } from '../firebase'
 import type { Client } from '../types/client'
 import { getDaysUntilExpiry } from '../types/client'
 
@@ -29,6 +32,25 @@ export async function requestNotificationPermission(): Promise<boolean> {
   if (Notification.permission === 'granted') return true
   const result = await Notification.requestPermission()
   return result === 'granted'
+}
+
+export async function registerPushToken(uid: string): Promise<void> {
+  const vapidKey = import.meta.env.VITE_VAPID_KEY
+  if (!vapidKey) return
+  try {
+    const messaging = await messagingPromise
+    if (!messaging) return
+    const sw = await navigator.serviceWorker.ready
+    const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: sw })
+    if (token) {
+      await setDoc(doc(db, 'users', uid, 'fcmTokens', token), {
+        token,
+        updatedAt: new Date().toISOString(),
+      })
+    }
+  } catch {
+    // FCM non disponible ou bloqué — pas critique
+  }
 }
 
 export function checkAndNotify(clients: Client[]) {

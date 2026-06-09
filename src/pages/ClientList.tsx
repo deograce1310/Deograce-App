@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Search, X, Bell, ChevronRight, LogOut, Settings, Trash2 } from 'lucide-react'
 import { subscribeToClients, deleteClient } from '../storage/clientStorage'
 import { useAuth } from '../contexts/AuthContext'
-import { requestNotificationPermission, checkAndNotify } from '../notifications/notificationService'
+import { requestNotificationPermission, checkAndNotify, registerPushToken } from '../notifications/notificationService'
 import type { Client } from '../types/client'
 import { getStatus, statusColor, getDaysUntilExpiry } from '../types/client'
 
@@ -23,7 +23,10 @@ export default function ClientList() {
       if (!notified) {
         notified = true
         requestNotificationPermission().then(granted => {
-          if (granted) checkAndNotify(loaded)
+          if (granted) {
+            checkAndNotify(loaded)
+            registerPushToken(user.uid)
+          }
         })
       }
     })
