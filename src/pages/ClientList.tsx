@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, X, Bell, ChevronRight, LogOut, Settings } from 'lucide-react'
+import { Plus, Search, X, Bell, ChevronRight, LogOut, Settings, Trash2 } from 'lucide-react'
 import { subscribeToClients, deleteClient } from '../storage/clientStorage'
 import { useAuth } from '../contexts/AuthContext'
 import { requestNotificationPermission, checkAndNotify } from '../notifications/notificationService'
@@ -48,8 +48,13 @@ export default function ClientList() {
 
   const handleDelete = async (client: Client) => {
     if (!user) return
-    await deleteClient(user.uid, client.id)
-    setDeleteConfirm(null)
+    try {
+      await deleteClient(user.uid, client.id)
+      setDeleteConfirm(null)
+    } catch (err) {
+      console.error('Erreur lors de la suppression :', err)
+      alert('Impossible de supprimer ce client. Veuillez réessayer.')
+    }
   }
 
   return (
@@ -287,25 +292,32 @@ function ClientRow({ client, index, onClick, onDelete }: {
   const dayLabel = days > 0 ? `${days}j` : days === 0 ? 'Auj.' : `−${Math.abs(days)}j`
 
   return (
-    <button
+    <div
       className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-[#F5F2ED] transition-colors animate-fade-in-up"
       style={{ animationDelay: `${index * 0.05}s` }}
-      onClick={onClick}
     >
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-base"
-        style={{ backgroundColor: avatarBg, color: avatarFg }}>
-        {initial}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-slate-900 text-sm truncate">{client.name}</p>
-        <p className="text-xs text-slate-400 truncate mt-0.5">{client.subscriptionType}{client.phoneNumber ? ` · ${client.phoneNumber}` : ''}</p>
-      </div>
-      <div className="flex items-center gap-1.5 flex-shrink-0">
-        <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ color, backgroundColor: color + '18' }}>
-          {dayLabel}
-        </span>
-        <ChevronRight className="w-4 h-4 text-slate-300" />
-      </div>
-    </button>
+      <button className="flex items-center gap-3 flex-1 min-w-0" onClick={onClick}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-base"
+          style={{ backgroundColor: avatarBg, color: avatarFg }}>
+          {initial}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-slate-900 text-sm truncate">{client.name}</p>
+          <p className="text-xs text-slate-400 truncate mt-0.5">{client.subscriptionType}{client.phoneNumber ? ` · ${client.phoneNumber}` : ''}</p>
+        </div>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ color, backgroundColor: color + '18' }}>
+            {dayLabel}
+          </span>
+          <ChevronRight className="w-4 h-4 text-slate-300" />
+        </div>
+      </button>
+      <button
+        onClick={onDelete}
+        className="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0 active:bg-red-100"
+      >
+        <Trash2 className="w-4 h-4 text-red-400" />
+      </button>
+    </div>
   )
 }
