@@ -1,5 +1,10 @@
+import { getToken, onMessage } from 'firebase/messaging'
+import { getMessagingInstance } from '../firebase'
+import { saveFcmToken } from '../storage/clientStorage'
 import type { Client } from '../types/client'
 import { getDaysUntilExpiry } from '../types/client'
+
+const PUSH_SW_SCOPE = '/firebase-cloud-messaging-push-scope'
 
 const NOTIF_KEY = 'deograce_notified'
 const PRUNE_DAYS = 30
@@ -29,6 +34,35 @@ export async function requestNotificationPermission(): Promise<boolean> {
   if (Notification.permission === 'granted') return true
   const result = await Notification.requestPermission()
   return result === 'granted'
+}
+
+// Enregistre le service worker FCM et envoie le token push au serveur,
+// ce qui permet de recevoir des notifications même app fermée.
+export async function registerPushNotifications(uid: string): Promise<void> {
+  if (!('serviceWorker' in navigator)) return
+  const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY
+  if (!vapidKey) return
+
+  try {
+    const messaging = await getMessagingInstance()
+    if (!messaging) return
+
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: PUSH_SW_SCOPE,
+    })
+
+    const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration })
+    if (token) await saveFcmToken(uid, token)
+
+    onMessage(messaging, payload => {
+      const { title, body } = payload.notification ?? {}
+      if (title && Notification.permission === 'granted') {
+        new Notification(title, { body, icon: '/icon-192.png', tag: payload.data?.tag })
+      }
+    })
+  } catch (e) {
+    console.error('Erreur lors de l\'enregistrement des notifications push :', e)
+  }
 }
 
 export function checkAndNotify(clients: Client[]) {
