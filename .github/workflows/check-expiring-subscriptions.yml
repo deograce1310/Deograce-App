@@ -1,0 +1,27 @@
+name: Check expiring subscriptions
+
+on:
+  schedule:
+    # 08:00 (Afrique/Kinshasa, UTC+1) chaque jour
+    - cron: '0 7 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: scripts
+        run: npm install
+
+      - name: Run notification check
+        working-directory: scripts
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node check-expiring-subscriptions.mjs
